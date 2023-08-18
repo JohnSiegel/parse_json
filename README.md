@@ -6,15 +6,17 @@ json_types
 Type-safe JSON serialization/deserialization with **NO CODE GENERATION OR REFLECTION**
 
 #### Example
+
+Define types:
 ```dart
 import 'package:json_types/json_types.dart';
 import 'package:test/test.dart';
 
 final class TestObject extends Json {
-  final stringJson = Json.string('string');
-  final doubleJson = Json.double('double');
-  final intJson = Json.int('int');
-  final boolJson = Json.boolean('bool');
+  final stringJson = Json.string('myStringKey');
+  final doubleJson = Json.double('myDoubleKey');
+  final intJson = Json.int('myIntKey');
+  final boolJson = Json.boolean('myBoolKey');
 
   String get myString => stringJson.value;
   double get myDouble => doubleJson.value;
@@ -43,11 +45,11 @@ final class TestObject extends Json {
 }
 
 final class TestLists extends Json {
-  final stringList = Json.stringList('stringList');
-  final doubleList = Json.doubleList('doubleList');
-  final intList = Json.intList('intList');
-  final boolList = Json.booleanList('boolList');
-  final objectList = Json.objectList('objectList', TestObject.parser);
+  final stringList = Json.stringList('myStringListKey');
+  final doubleList = Json.doubleList('myDoubleListKey');
+  final intList = Json.intList('myIntListKey');
+  final boolList = Json.booleanList('myBoolListKey');
+  final objectList = Json.objectList('myObjectListKey', TestObject.parser);
 
   List<String> get myStringList => stringList.value;
   List<double> get myDoubleList => doubleList.value;
@@ -79,11 +81,11 @@ final class TestLists extends Json {
 }
 
 final class TestMaps extends Json {
-  final stringMap = Json.stringMap('stringMap');
-  final doubleMap = Json.doubleMap('doubleMap');
-  final intMap = Json.intMap('intMap');
-  final booleanMap = Json.booleanMap('booleanMap');
-  final objectMap = Json.objectMap('objectMap', TestObject.parser);
+  final stringMap = Json.stringMap('myStringMapKey');
+  final doubleMap = Json.doubleMap('myDoubleMapKey');
+  final intMap = Json.intMap('myIntMapKey');
+  final booleanMap = Json.booleanMap('myBooleanMapKey');
+  final objectMap = Json.objectMap('myObjectMapKey', TestObject.parser);
 
   Map<String, String> get myStringMap => stringMap.value;
   Map<String, double> get myDoubleMap => doubleMap.value;
@@ -115,9 +117,9 @@ final class TestMaps extends Json {
 }
 
 final class TestAggregateObject extends Json {
-  final objectJson = Json.object('object', TestObject.parser);
-  final mapsJson = Json.object('maps', TestMaps.parser);
-  final listsJson = Json.object('lists', TestLists.parser);
+  final objectJson = Json.object('myObjectKey', TestObject.parser);
+  final mapsJson = Json.object('myMapsKey', TestMaps.parser);
+  final listsJson = Json.object('myListsKey', TestLists.parser);
 
   TestObject get myObject => objectJson.value;
   TestMaps get myMaps => mapsJson.value;
@@ -140,99 +142,120 @@ final class TestAggregateObject extends Json {
   @override
   List<JsonKey<dynamic, dynamic>> get keys => [objectJson, mapsJson, listsJson];
 }
+```
 
-void main() {
-  final object1 =
-      TestObject.populated(str: 'testStr', d: 12.5, i: 10, b: false);
+Use types:
+```dart
+final object1 = TestObject.populated(str: 'testStr', d: 12.5, i: 10, b: false);
 
-  final objectJson1 = {
-    'string': 'testStr',
-    'double': 12.5,
-    'int': 10,
-    'bool': false,
-  };
+final objectJson1 = {
+  'myStringKey': 'testStr',
+  'myDoubleKey': 12.5,
+  'myIntKey': 10,
+  'myBoolKey': false,
+};
 
-  final object2 =
-      TestObject.populated(str: 'testStr2', d: 102.5, i: -5, b: true);
+assert(TestObject.parse(objectJson1) == object1);
+assert(object1.toJson() == objectJson1);
 
-  final objectJson2 = {
-    'string': 'testStr2',
-    'double': 102.5,
-    'int': -5,
-    'bool': true,
-  };
+final object2 =
+    TestObject.populated(str: 'testStr2', d: 102.5, i: -5, b: true);
 
-  final maps = TestMaps.populated(
-    stringMap: {'string1': 'value1', 'string2': 'value2'},
-    doubleMap: {'double1': 2.5, 'double2': 3.5},
-    intMap: {'int1': 3, 'int2': 4},
-    booleanMap: {'bool1': false, 'bool2': true},
-    objectMap: {'object1': object1, 'object2': object2},
-  );
+final objectJson2 = {
+  'string': 'testStr2',
+  'double': 102.5,
+  'int': -5,
+  'bool': true,
+};
 
-  final mapsJson = {
-    'stringMap': {
-      'string1': 'value1',
-      'string2': 'value2',
-    },
-    'doubleMap': {
-      'double1': 2.5,
-      'double2': 3.5,
-    },
-    'intMap': {
-      'int1': 3,
-      'int2': 4,
-    },
-    'booleanMap': {
-      'bool1': false,
-      'bool2': true,
-    },
-    'objectMap': {
-      'object1': objectJson1,
-      'object2': objectJson2,
-    },
-  };
+assert(TestObject.parse(objectJson2) == object2);
+assert(object2.toJson() == objectJson2);
+```
 
-  final lists = TestLists.populated(
-    stringList: ['string1', 'string2'],
-    doubleList: [2.5, 3.5],
-    intList: [3, 4],
-    boolList: [false, true],
-    objectList: [object1, object2],
-  );
+Using maps and lists:
+```dart
+final maps = TestMaps.populated(
+  stringMap: {'string1': 'value1', 'string2': 'value2'},
+  doubleMap: {'double1': 2.5, 'double2': 3.5},
+  intMap: {'int1': 3, 'int2': 4},
+  booleanMap: {'bool1': false, 'bool2': true},
+  objectMap: {'object1': object1, 'object2': object2},
+);
 
-  final listsJson = {
-    'stringList': [
-      'string1',
-      'string2',
-    ],
-    'doubleList': [
-      2.5,
-      3.5,
-    ],
-    'intList': [
-      3,
-      4,
-    ],
-    'boolList': [
-      false,
-      true,
-    ],
-    'objectList': [
-      objectJson1,
-      objectJson2,
-    ],
-  };
+final mapsJson = {
+  'stringMap': {
+    'string1': 'value1',
+    'string2': 'value2',
+  },
+  'doubleMap': {
+    'double1': 2.5,
+    'double2': 3.5,
+  },
+  'intMap': {
+    'int1': 3,
+    'int2': 4,
+  },
+  'booleanMap': {
+    'bool1': false,
+    'bool2': true,
+  },
+  'objectMap': {
+    'object1': objectJson1,
+    'object2': objectJson2,
+  },
+};
 
-  final aggregateObject =
-      TestAggregateObject.populated(object: object1, maps: maps, lists: lists);
+assert(TestMaps.parse(mapsJson) == maps);
+assert(maps.toJson() == mapsJson);
 
-  final aggregateObjectJson = {
-    'object': objectJson1,
-    'maps': mapsJson,
-    'lists': listsJson,
-  };
-}
+final lists = TestLists.populated(
+  stringList: ['string1', 'string2'],
+  doubleList: [2.5, 3.5],
+  intList: [3, 4],
+  boolList: [false, true],
+  objectList: [object1, object2],
+);
+
+final listsJson = {
+  'stringList': [
+    'string1',
+    'string2',
+  ],
+  'doubleList': [
+    2.5,
+    3.5,
+  ],
+  'intList': [
+    3,
+    4,
+  ],
+  'boolList': [
+    false,
+    true,
+  ],
+  'objectList': [
+    objectJson1,
+    objectJson2,
+  ],
+};
+
+assert(TestLists.parse(listsJson) == lists);
+assert(lists.toJson() == listsJson);
+```
+
+Complex data types:
+```dart
+final aggregateObject =
+    TestAggregateObject.populated(object: object, maps: maps, lists: lists);
+
+final aggregateObjectJson = {
+  'object': objectJson,
+  'maps': mapsJson,
+  'lists': listsJson,
+};
+
+assert(TestAggregateObject.parse(aggregateObjectJson) == aggregateObject);
+assert(aggregateObject.toJson() == aggregateObjectJson);
 ```
 
 ##### License/Disclaimer
