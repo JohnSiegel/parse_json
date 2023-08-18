@@ -1,7 +1,7 @@
-name: json
+name: json_types
 description: Type safe JSON serialization/deserialization for Dart with no code generation.
 version: 1.0.0+1
-repository: https://github.com/JohnSiegel/json
+repository: https://github.com/JohnSiegel/json_types
 
 environment:
   sdk: '>=3.0.0 <4.0.0'

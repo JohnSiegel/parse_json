@@ -3,7 +3,7 @@ json_types
 
 [![License](https://img.shields.io/github/license/JohnSiegel/json_types?style=flat-square&logo=github)](https://github.com/JohnSiegel/json_types/blob/main/LICENSE)
 
-JSON Serialization with **NO CODE GENERATION**
+Type-safe JSON serialization/deserialization with **NO CODE GENERATION OR REFLECTION**
 
 #### Example
 ```dart

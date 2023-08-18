@@ -1,4 +1,4 @@
-import 'package:json/json.dart';
+import 'package:json_types/json_types.dart';
 import 'package:test/test.dart';
 
 final class TestObject extends Json {
