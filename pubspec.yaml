@@ -1,6 +1,7 @@
 name: json
 description: Type safe JSON serialization/deserialization for Dart with no code generation.
 version: 1.0.0+1
+repository: https://github.com/JohnSiegel/json
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
