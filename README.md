@@ -1,13 +1,13 @@
-json
+json_types
 -----
 
-[![License](https://img.shields.io/github/license/JohnSiegel/json?style=flat-square&logo=github)](https://github.com/JohnSiegel/json/blob/main/LICENSE)
+[![License](https://img.shields.io/github/license/JohnSiegel/json_types?style=flat-square&logo=github)](https://github.com/JohnSiegel/json_types/blob/main/LICENSE)
 
 JSON Serialization with **NO CODE GENERATION**
 
 #### Example
 ```dart
-import 'package:json/json.dart';
+import 'package:json_types/json_types.dart';
 import 'package:test/test.dart';
 
 final class TestObject extends Json {
@@ -237,4 +237,4 @@ void main() {
 
 ##### License/Disclaimer
 
-See [LICENSE](https://github.com/JohnSiegel/json/blob/main/LICENSE)
+See [LICENSE](https://github.com/JohnSiegel/json_types/blob/main/LICENSE)
