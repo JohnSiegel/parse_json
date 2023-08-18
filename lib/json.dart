@@ -5,10 +5,10 @@ abstract class Json extends Equatable {
   Map<String, dynamic> toJson() =>
       Map.fromEntries(keys.map((key) => MapEntry(key.key, key.serialized)));
 
-  void parse(Map<String, dynamic> json, {bool strict = true}) {
+  void _parse(Map<String, dynamic> json, {bool strict = true}) {
     for (final key in keys) {
       if (json.containsKey(key.key)) {
-        key.parse(json[key.key]);
+        key._parse(json[key.key]);
       } else if (strict) {
         throw FormatException('Json does not contain key ${key.key}', json);
       }
@@ -18,7 +18,7 @@ abstract class Json extends Equatable {
   const Json() : super();
 
   Json.parse(Map<String, dynamic> json, {bool strict = true}) : super() {
-    parse(json, strict: strict);
+    _parse(json, strict: strict);
   }
 
   List<JsonKey<dynamic, dynamic>> get keys;
@@ -32,7 +32,7 @@ abstract class Json extends Equatable {
   static JsonBoolean boolean(String key) => JsonBoolean.parser(key);
   static JsonObject<T> object<T extends Json>(
           String key, T Function() parser) =>
-      JsonObject<T>.parser(key, parser);
+      JsonObject.parser(key, parser);
 
   static JsonStringList stringList(String key) => JsonStringList.parser(key);
   static JsonIntList intList(String key) => JsonIntList.parser(key);
@@ -40,7 +40,7 @@ abstract class Json extends Equatable {
   static JsonBooleanList booleanList(String key) => JsonBooleanList.parser(key);
   static JsonObjectList<T> objectList<T extends Json>(
           String key, T Function() parserConstructor) =>
-      JsonObjectList<T>.parser(key, parserConstructor);
+      JsonObjectList.parser(key, parserConstructor);
 
   static JsonStringMap stringMap(String key) => JsonStringMap.parser(key);
   static JsonIntMap intMap(String key) => JsonIntMap.parser(key);
@@ -48,7 +48,7 @@ abstract class Json extends Equatable {
   static JsonBooleanMap booleanMap(String key) => JsonBooleanMap.parser(key);
   static JsonObjectMap<T> objectMap<T extends Json>(
           String key, T Function() parserConstructor) =>
-      JsonObjectMap<T>.parser(key, parserConstructor);
+      JsonObjectMap.parser(key, parserConstructor);
 }
 
 sealed class _JsonKeyState<T, Serialized> extends Equatable {
@@ -98,7 +98,7 @@ sealed class JsonKey<T, Serialized> {
       : _state = _PopulatedState(val),
         super();
 
-  T parse(Serialized serialized) => switch (_state) {
+  T _parse(Serialized serialized) => switch (_state) {
         _FullyPopulatedState(value: final value) ||
         _PopulatedState(value: final value) =>
           throw StateError(
@@ -181,7 +181,7 @@ final class JsonObject<T extends Json>
   JsonObject.parser(
     String key,
     T Function() parser,
-  ) : super.parser(key, (json) => parser()..parse(json));
+  ) : super.parser(key, (json) => parser().._parse(json));
 
   JsonObject.populated(super.key, super.val) : super.populated();
 
@@ -245,7 +245,7 @@ final class JsonBooleanList extends _JsonPrimitiveList<bool> {
 final class JsonObjectList<T extends Json>
     extends _JsonList<T, Map<String, dynamic>> {
   JsonObjectList.parser(String key, T Function() parserConstructor)
-      : super.parser(key, (json) => parserConstructor()..parse(json));
+      : super.parser(key, (json) => parserConstructor().._parse(json));
 
   JsonObjectList.populated(super.key, super.val) : super.populated();
 
@@ -291,7 +291,7 @@ final class JsonBooleanMap extends _JsonPrimitiveMap<bool> {
 final class JsonObjectMap<T extends Json>
     extends _JsonMap<T, Map<String, dynamic>> {
   JsonObjectMap.parser(String key, T Function() parserConstructor)
-      : super.parser(key, (json) => parserConstructor()..parse(json));
+      : super.parser(key, (json) => parserConstructor().._parse(json));
 
   JsonObjectMap.populated(super.key, super.val) : super.populated();
 
