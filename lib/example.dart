@@ -1,6 +1,8 @@
 import 'json_types.dart';
 
-final class TestObject extends Json {
+/// Example of a class that extends [Json] and uses [JsonKey]s to define
+/// properties.
+final class ExampleObject extends Json {
   final stringJson = Json.string('myStringKey');
   final doubleJson = Json.double('myDoubleKey');
   final intJson = Json.int('myIntKey');
@@ -11,11 +13,11 @@ final class TestObject extends Json {
   int get myInt => intJson.value;
   bool get myBool => boolJson.value;
 
-  TestObject.parser() : super();
+  ExampleObject.parser() : super();
 
-  TestObject.parse(super.json) : super.parse();
+  ExampleObject.parse(super.json) : super.parse();
 
-  TestObject.populated({
+  ExampleObject.populated({
     required String str,
     required double d,
     required int i,
@@ -32,47 +34,55 @@ final class TestObject extends Json {
       [stringJson, doubleJson, intJson, boolJson];
 }
 
-final object1 = TestObject.populated(str: 'testStr', d: 12.5, i: 10, b: false);
+/// Create a [ExampleObject] from in-memory data.
+final object1 =
+    ExampleObject.populated(str: 'exampleStr', d: 12.5, i: 10, b: false);
 
+/// A JSON representation of [object1].
 final objectJson1 = {
-  'myStringKey': 'testStr',
+  'myStringKey': 'exampleStr',
   'myDoubleKey': 12.5,
   'myIntKey': 10,
   'myBoolKey': false,
 };
 
-final object2 = TestObject.populated(str: 'testStr2', d: 102.5, i: -5, b: true);
+/// Create another [ExampleObject] from in-memory data.
+final object2 =
+    ExampleObject.populated(str: 'exampleStr2', d: 102.5, i: -5, b: true);
 
+/// A JSON representation of [object2].
 final objectJson2 = {
-  'string': 'testStr2',
+  'string': 'exampleStr2',
   'double': 102.5,
   'int': -5,
   'bool': true,
 };
 
-final class TestMaps extends Json {
+/// Example of a class that extends [Json] and uses [JsonKey]s to define
+/// maps.
+final class ExampleMaps extends Json {
   final stringMap = Json.stringMap('myStringMapKey');
   final doubleMap = Json.doubleMap('myDoubleMapKey');
   final intMap = Json.intMap('myIntMapKey');
   final booleanMap = Json.booleanMap('myBooleanMapKey');
-  final objectMap = Json.objectMap('myObjectMapKey', TestObject.parser);
+  final objectMap = Json.objectMap('myObjectMapKey', ExampleObject.parser);
 
   Map<String, String> get myStringMap => stringMap.value;
   Map<String, double> get myDoubleMap => doubleMap.value;
   Map<String, int> get myIntMap => intMap.value;
   Map<String, bool> get myBooleanMap => booleanMap.value;
-  Map<String, TestObject> get myObjectMap => objectMap.value;
+  Map<String, ExampleObject> get myObjectMap => objectMap.value;
 
-  TestMaps.parser() : super();
+  ExampleMaps.parser() : super();
 
-  TestMaps.parse(super.json) : super.parse();
+  ExampleMaps.parse(super.json) : super.parse();
 
-  TestMaps.populated({
+  ExampleMaps.populated({
     required Map<String, String> stringMap,
     required Map<String, double> doubleMap,
     required Map<String, int> intMap,
     required Map<String, bool> booleanMap,
-    required Map<String, TestObject> objectMap,
+    required Map<String, ExampleObject> objectMap,
   }) : super() {
     this.stringMap.populate(stringMap);
     this.doubleMap.populate(doubleMap);
@@ -86,7 +96,8 @@ final class TestMaps extends Json {
       [stringMap, doubleMap, intMap, booleanMap, objectMap];
 }
 
-final maps = TestMaps.populated(
+/// Create a [ExampleMaps] from in-memory data.
+final maps = ExampleMaps.populated(
   stringMap: {'string1': 'value1', 'string2': 'value2'},
   doubleMap: {'double1': 2.5, 'double2': 3.5},
   intMap: {'int1': 3, 'int2': 4},
@@ -94,6 +105,7 @@ final maps = TestMaps.populated(
   objectMap: {'object1': object1, 'object2': object2},
 );
 
+/// A JSON representation of [maps].
 final mapsJson = {
   'stringMap': {
     'string1': 'value1',
@@ -117,29 +129,31 @@ final mapsJson = {
   },
 };
 
-final class TestLists extends Json {
+/// Example of a class that extends [Json] and uses [JsonKey]s to define
+/// lists.
+final class ExampleLists extends Json {
   final stringList = Json.stringList('myStringListKey');
   final doubleList = Json.doubleList('myDoubleListKey');
   final intList = Json.intList('myIntListKey');
   final boolList = Json.booleanList('myBoolListKey');
-  final objectList = Json.objectList('myObjectListKey', TestObject.parser);
+  final objectList = Json.objectList('myObjectListKey', ExampleObject.parser);
 
   List<String> get myStringList => stringList.value;
   List<double> get myDoubleList => doubleList.value;
   List<int> get myIntList => intList.value;
   List<bool> get myBoolList => boolList.value;
-  List<TestObject> get myObjectList => objectList.value;
+  List<ExampleObject> get myObjectList => objectList.value;
 
-  TestLists.parser() : super();
+  ExampleLists.parser() : super();
 
-  TestLists.parse(super.json) : super.parse();
+  ExampleLists.parse(super.json) : super.parse();
 
-  TestLists.populated({
+  ExampleLists.populated({
     required List<String> stringList,
     required List<double> doubleList,
     required List<int> intList,
     required List<bool> boolList,
-    required List<TestObject> objectList,
+    required List<ExampleObject> objectList,
   }) : super() {
     this.stringList.populate(stringList);
     this.doubleList.populate(doubleList);
@@ -153,7 +167,8 @@ final class TestLists extends Json {
       [stringList, doubleList, intList, boolList, objectList];
 }
 
-final lists = TestLists.populated(
+/// Create a [ExampleLists] from in-memory data.
+final lists = ExampleLists.populated(
   stringList: ['string1', 'string2'],
   doubleList: [2.5, 3.5],
   intList: [3, 4],
@@ -161,6 +176,7 @@ final lists = TestLists.populated(
   objectList: [object1, object2],
 );
 
+/// A JSON representation of [lists].
 final listsJson = {
   'stringList': [
     'string1',
@@ -184,23 +200,25 @@ final listsJson = {
   ],
 };
 
-final class TestAggregateObject extends Json {
-  final objectJson = Json.object('myObjectKey', TestObject.parser);
-  final mapsJson = Json.object('myMapsKey', TestMaps.parser);
-  final listsJson = Json.object('myListsKey', TestLists.parser);
+/// Example of a class that extends [Json] and uses [JsonKey]s to define
+/// nested objects.
+final class ExampleAggregateObject extends Json {
+  final objectJson = Json.object('myObjectKey', ExampleObject.parser);
+  final mapsJson = Json.object('myMapsKey', ExampleMaps.parser);
+  final listsJson = Json.object('myListsKey', ExampleLists.parser);
 
-  TestObject get myObject => objectJson.value;
-  TestMaps get myMaps => mapsJson.value;
-  TestLists get myLists => listsJson.value;
+  ExampleObject get myObject => objectJson.value;
+  ExampleMaps get myMaps => mapsJson.value;
+  ExampleLists get myLists => listsJson.value;
 
-  TestAggregateObject.parser() : super();
+  ExampleAggregateObject.parser() : super();
 
-  TestAggregateObject.parse(super.json) : super.parse();
+  ExampleAggregateObject.parse(super.json) : super.parse();
 
-  TestAggregateObject.populated({
-    required TestObject object,
-    required TestMaps maps,
-    required TestLists lists,
+  ExampleAggregateObject.populated({
+    required ExampleObject object,
+    required ExampleMaps maps,
+    required ExampleLists lists,
   }) : super() {
     objectJson.populate(object);
     mapsJson.populate(maps);
@@ -211,11 +229,30 @@ final class TestAggregateObject extends Json {
   List<JsonKey<dynamic, dynamic>> get keys => [objectJson, mapsJson, listsJson];
 }
 
+/// Create a [ExampleAggregateObject] from in-memory data.
 final aggregateObject =
-    TestAggregateObject.populated(object: object1, maps: maps, lists: lists);
+    ExampleAggregateObject.populated(object: object1, maps: maps, lists: lists);
 
+/// A JSON representation of [aggregateObject].
 final aggregateObjectJson = {
   'object': objectJson1,
   'maps': mapsJson,
   'lists': listsJson,
 };
+
+void main() {
+  assert(object1.toJson() == objectJson1);
+  assert(ExampleObject.parse(objectJson1) == object1);
+
+  assert(object2.toJson() == objectJson2);
+  assert(ExampleObject.parse(objectJson2) == object2);
+
+  assert(maps.toJson() == mapsJson);
+  assert(ExampleMaps.parse(mapsJson) == maps);
+
+  assert(lists.toJson() == listsJson);
+  assert(ExampleLists.parse(listsJson) == lists);
+
+  assert(aggregateObject.toJson() == aggregateObjectJson);
+  assert(ExampleAggregateObject.parse(aggregateObjectJson) == aggregateObject);
+}

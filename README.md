@@ -8,10 +8,17 @@ json_types
 ### *NO CODE GENERATION OR REFLECTION*
 
 ## Example:
-[lib/example.dart](lib/example.dart)
+
+* [Simple types](#simple-types)
+* [Maps](#maps)
+* [Lists](#lists)
+* [Complex data types](#complex-data-types)
+* [lib/example.dart](lib/example.dart)
 
 ## Simple types:
 ```dart
+/// Example of a class that extends [Json] and uses [JsonKey]s to define
+/// properties.
 final class TestObject extends Json {
   final stringJson = Json.string('myStringKey');
   final doubleJson = Json.double('myDoubleKey');
@@ -44,8 +51,10 @@ final class TestObject extends Json {
       [stringJson, doubleJson, intJson, boolJson];
 }
 
+/// Create a [TestObject] from in-memory data.
 final object1 = TestObject.populated(str: 'testStr', d: 12.5, i: 10, b: false);
 
+/// A JSON representation of [object1].
 final objectJson1 = {
   'myStringKey': 'testStr',
   'myDoubleKey': 12.5,
@@ -53,12 +62,17 @@ final objectJson1 = {
   'myBoolKey': false,
 };
 
-assert(TestObject.parse(objectJson1) == object1);
-assert(object1.toJson() == objectJson1);
+/// Parse the JSON representation of [object1] into a [TestObject].
+TestObject.parse(objectJson1);
 
+/// Convert [object1] to JSON.
+object1.toJson();
+
+/// Create a [TestObject] from in-memory data.
 final object2 =
     TestObject.populated(str: 'testStr2', d: 102.5, i: -5, b: true);
 
+/// A JSON representation of [object2].
 final objectJson2 = {
   'string': 'testStr2',
   'double': 102.5,
@@ -66,12 +80,14 @@ final objectJson2 = {
   'bool': true,
 };
 
-assert(TestObject.parse(objectJson2) == object2);
-assert(object2.toJson() == objectJson2);
+TestObject.parse(objectJson2); /// Deserialize JSON into a [TestObject].
+object2.toJson(); /// Serialize a [TestObject] into JSON.
 ```
 
 ## Maps:
 ```dart
+/// Example of a class that extends [Json] and uses [JsonKey]s to define
+/// maps.
 final class TestMaps extends Json {
   final stringMap = Json.stringMap('myStringMapKey');
   final doubleMap = Json.doubleMap('myDoubleMapKey');
@@ -108,6 +124,7 @@ final class TestMaps extends Json {
       [stringMap, doubleMap, intMap, booleanMap, objectMap];
 }
 
+/// Create a [TestMaps] from in-memory data.
 final maps = TestMaps.populated(
   stringMap: {'string1': 'value1', 'string2': 'value2'},
   doubleMap: {'double1': 2.5, 'double2': 3.5},
@@ -116,6 +133,7 @@ final maps = TestMaps.populated(
   objectMap: {'object1': object1, 'object2': object2},
 );
 
+/// A JSON representation of [maps].
 final mapsJson = {
   'stringMap': {
     'string1': 'value1',
@@ -139,12 +157,14 @@ final mapsJson = {
   },
 };
 
-assert(TestMaps.parse(mapsJson) == maps);
-assert(maps.toJson() == mapsJson);
+TestMaps.parse(mapsJson); /// Deserialize JSON into a [TestMaps].
+maps.toJson(); /// Serialize a [TestMaps] into JSON.
 ```
 
 ## Lists:
 ```dart
+/// Example of a class that extends [Json] and uses [JsonKey]s to define
+/// lists.
 final class TestLists extends Json {
   final stringList = Json.stringList('myStringListKey');
   final doubleList = Json.doubleList('myDoubleListKey');
@@ -181,6 +201,7 @@ final class TestLists extends Json {
       [stringList, doubleList, intList, boolList, objectList];
 }
 
+/// Create a [TestLists] from in-memory data.
 final lists = TestLists.populated(
   stringList: ['string1', 'string2'],
   doubleList: [2.5, 3.5],
@@ -189,6 +210,7 @@ final lists = TestLists.populated(
   objectList: [object1, object2],
 );
 
+/// A JSON representation of [lists].
 final listsJson = {
   'stringList': [
     'string1',
@@ -212,12 +234,14 @@ final listsJson = {
   ],
 };
 
-assert(TestLists.parse(listsJson) == lists);
-assert(lists.toJson() == listsJson);
+TestLists.parse(listsJson); /// Deserialize JSON into a [TestLists].
+lists.toJson(); /// Serialize a [TestLists] into JSON.
 ```
 
 ## Complex data types:
 ```dart
+/// Example of a class that extends [Json] and uses [JsonKey]s to define
+/// complex data types.
 final class TestAggregateObject extends Json {
   final objectJson = Json.object('myObjectKey', TestObject.parser);
   final mapsJson = Json.object('myMapsKey', TestMaps.parser);
@@ -245,17 +269,19 @@ final class TestAggregateObject extends Json {
   List<JsonKey<dynamic, dynamic>> get keys => [objectJson, mapsJson, listsJson];
 }
 
+/// Create a [TestAggregateObject] from in-memory data.
 final aggregateObject =
     TestAggregateObject.populated(object: object, maps: maps, lists: lists);
 
+/// A JSON representation of [aggregateObject].
 final aggregateObjectJson = {
   'object': objectJson,
   'maps': mapsJson,
   'lists': listsJson,
 };
 
-assert(TestAggregateObject.parse(aggregateObjectJson) == aggregateObject);
-assert(aggregateObject.toJson() == aggregateObjectJson);
+TestAggregateObject.parse(aggregateObjectJson); /// Deserialize JSON into a [TestAggregateObject].
+aggregateObject.toJson(); /// Serialize a [TestAggregateObject] into JSON.
 ```
 
 ### License/Disclaimer
