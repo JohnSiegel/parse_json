@@ -1,4 +1,4 @@
-import 'json_types.dart';
+import 'package:json_types/json_types.dart';
 
 /// Example of a class that extends [Json] and uses [JsonKey]s to define
 /// properties.

@@ -13,7 +13,7 @@ json_types
 * [Maps](#maps)
 * [Lists](#lists)
 * [Complex data types](#complex-data-types)
-* [lib/example.dart](lib/example.dart)
+* [Full example](example/lib/main.dart)
 
 ## Simple types:
 ```dart
