@@ -5,7 +5,10 @@ json_types
 
 # Type-safe JSON serialization/deserialization
 
-### NO CODE GENERATION OR REFLECTION
+### *NO CODE GENERATION OR REFLECTION*
+
+## Example:
+[lib/example.dart](lib/example.dart)
 
 ## Simple types:
 ```dart
