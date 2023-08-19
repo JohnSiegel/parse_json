@@ -29,12 +29,26 @@ final class JsonBooleanMap extends _JsonPrimitiveMap<bool> {
 }
 
 /// A [JsonKey] that parses a map of [Json] objects.
-final class JsonObjectMap<T extends Json>
+final class JsonObjectKeyMap<T extends Json>
     extends _JsonMap<T, Map<String, dynamic>> {
-  JsonObjectMap.parser(String key, T Function() parserConstructor)
+  JsonObjectKeyMap.parser(String key, T Function() parserConstructor)
       : super.parser(key, (json) => parserConstructor()..parse(json));
 
-  JsonObjectMap.populated(super.key, super.val) : super.populated();
+  JsonObjectKeyMap.populated(super.key, super.val) : super.populated();
+
+  @override
+  Map<String, Map<String, dynamic>> serialize(Map<String, T> value) =>
+      value.map((k, v) => MapEntry(k, v.toJson()));
+}
+
+/// A [JsonKey] that parses a map of [JsonPolymorphic] objects.
+final class JsonPolymorphicKeyMap<T extends JsonPolymorphic<T>>
+    extends _JsonMap<T, Map<String, dynamic>> {
+  JsonPolymorphicKeyMap.parser(String key, List<T Function()> parsers)
+      : super.parser(
+            key, (json) => JsonPolymorphic.polymorphicParse(json, parsers));
+
+  JsonPolymorphicKeyMap.populated(super.key, super.val) : super.populated();
 
   @override
   Map<String, Map<String, dynamic>> serialize(Map<String, T> value) =>

@@ -1,4 +1,5 @@
 import 'package:json_types/json.dart';
+import 'package:json_types/json_polymorphic.dart';
 import 'package:test/test.dart';
 
 final class TestObject extends Json {
@@ -33,18 +34,102 @@ final class TestObject extends Json {
       [stringJson, doubleJson, intJson, boolJson];
 }
 
+sealed class TestPolymorphic extends JsonPolymorphic<TestPolymorphic> {
+  final stringJson = Json.string('string');
+  final doubleJson = Json.double('double');
+
+  String get myString => stringJson.value;
+  double get myDouble => doubleJson.value;
+
+  TestPolymorphic() : super();
+
+  TestPolymorphic.parse(super.json) : super.parse();
+
+  factory TestPolymorphic.polymorphicParse(
+    Map<String, dynamic> json,
+    List<TestPolymorphic Function()> parsers,
+  ) =>
+      JsonPolymorphic.polymorphicParse(json, parsers);
+
+  TestPolymorphic.populated({
+    required String str,
+    required double d,
+  }) : super() {
+    stringJson.populate(str);
+    doubleJson.populate(d);
+  }
+
+  @override
+  List<JsonKey<dynamic, dynamic>> get keys => [stringJson, doubleJson];
+}
+
+final class TestPolymorphicA extends TestPolymorphic {
+  final intJson = Json.int('int');
+  final boolJson = Json.boolean('bool');
+
+  int get myInt => intJson.value;
+  bool get myBool => boolJson.value;
+
+  TestPolymorphicA.parser() : super();
+
+  TestPolymorphicA.parse(super.json) : super.parse();
+
+  TestPolymorphicA.populated({
+    required super.str,
+    required super.d,
+    required int i,
+    required bool b,
+  }) : super.populated() {
+    intJson.populate(i);
+    boolJson.populate(b);
+  }
+
+  @override
+  List<JsonKey<dynamic, dynamic>> get keys =>
+      [...super.keys, intJson, boolJson];
+}
+
+final class TestPolymorphicB extends TestPolymorphic {
+  final stringListJson = Json.stringList('stringList');
+  final doubleListJson = Json.doubleList('doubleList');
+
+  List<String> get myStringList => stringListJson.value;
+  List<double> get myDoubleList => doubleListJson.value;
+
+  TestPolymorphicB.parser() : super();
+
+  TestPolymorphicB.parse(super.json) : super.parse();
+
+  TestPolymorphicB.populated({
+    required super.str,
+    required super.d,
+    required List<String> stringList,
+    required List<double> doubleList,
+  }) : super.populated() {
+    stringListJson.populate(stringList);
+    doubleListJson.populate(doubleList);
+  }
+
+  @override
+  List<JsonKey<dynamic, dynamic>> get keys =>
+      [...super.keys, stringListJson, doubleListJson];
+}
+
 final class TestLists extends Json {
   final stringList = Json.stringList('stringList');
   final doubleList = Json.doubleList('doubleList');
   final intList = Json.intList('intList');
   final boolList = Json.booleanList('boolList');
   final objectList = Json.objectList('objectList', TestObject.parser);
+  final polymorphicList = Json.polymorphicList(
+      'polymorphicList', [TestPolymorphicA.parser, TestPolymorphicB.parser]);
 
   List<String> get myStringList => stringList.value;
   List<double> get myDoubleList => doubleList.value;
   List<int> get myIntList => intList.value;
   List<bool> get myBoolList => boolList.value;
   List<TestObject> get myObjectList => objectList.value;
+  List<TestPolymorphic> get myPolymorphicList => polymorphicList.value;
 
   TestLists.parser() : super();
 
@@ -56,17 +141,19 @@ final class TestLists extends Json {
     required List<int> intList,
     required List<bool> boolList,
     required List<TestObject> objectList,
+    required List<TestPolymorphic> polymorphicList,
   }) : super() {
     this.stringList.populate(stringList);
     this.doubleList.populate(doubleList);
     this.intList.populate(intList);
     this.boolList.populate(boolList);
     this.objectList.populate(objectList);
+    this.polymorphicList.populate(polymorphicList);
   }
 
   @override
   List<JsonKey<dynamic, dynamic>> get keys =>
-      [stringList, doubleList, intList, boolList, objectList];
+      [stringList, doubleList, intList, boolList, objectList, polymorphicList];
 }
 
 final class TestMaps extends Json {
@@ -75,12 +162,15 @@ final class TestMaps extends Json {
   final intMap = Json.intMap('intMap');
   final booleanMap = Json.booleanMap('booleanMap');
   final objectMap = Json.objectMap('objectMap', TestObject.parser);
+  final polymorphicMap = Json.polymorphicMap(
+      'polymorphicMap', [TestPolymorphicA.parser, TestPolymorphicB.parser]);
 
   Map<String, String> get myStringMap => stringMap.value;
   Map<String, double> get myDoubleMap => doubleMap.value;
   Map<String, int> get myIntMap => intMap.value;
   Map<String, bool> get myBooleanMap => booleanMap.value;
   Map<String, TestObject> get myObjectMap => objectMap.value;
+  Map<String, TestPolymorphic> get myPolymorphicMap => polymorphicMap.value;
 
   TestMaps.parser() : super();
 
@@ -92,27 +182,32 @@ final class TestMaps extends Json {
     required Map<String, int> intMap,
     required Map<String, bool> booleanMap,
     required Map<String, TestObject> objectMap,
+    required Map<String, TestPolymorphic> polymorphicMap,
   }) : super() {
     this.stringMap.populate(stringMap);
     this.doubleMap.populate(doubleMap);
     this.intMap.populate(intMap);
     this.booleanMap.populate(booleanMap);
     this.objectMap.populate(objectMap);
+    this.polymorphicMap.populate(polymorphicMap);
   }
 
   @override
   List<JsonKey<dynamic, dynamic>> get keys =>
-      [stringMap, doubleMap, intMap, booleanMap, objectMap];
+      [stringMap, doubleMap, intMap, booleanMap, objectMap, polymorphicMap];
 }
 
 final class TestAggregateObject extends Json {
   final objectJson = Json.object('object', TestObject.parser);
   final mapsJson = Json.object('maps', TestMaps.parser);
   final listsJson = Json.object('lists', TestLists.parser);
+  final polymorphicJson = Json.polymorphic(
+      'polymorphic', [TestPolymorphicA.parser, TestPolymorphicB.parser]);
 
   TestObject get myObject => objectJson.value;
   TestMaps get myMaps => mapsJson.value;
   TestLists get myLists => listsJson.value;
+  TestPolymorphic get myPolymorphic => polymorphicJson.value;
 
   TestAggregateObject.parser() : super();
 
@@ -122,14 +217,21 @@ final class TestAggregateObject extends Json {
     required TestObject object,
     required TestMaps maps,
     required TestLists lists,
+    required TestPolymorphic polymorphic,
   }) : super() {
     objectJson.populate(object);
     mapsJson.populate(maps);
     listsJson.populate(lists);
+    polymorphicJson.populate(polymorphic);
   }
 
   @override
-  List<JsonKey<dynamic, dynamic>> get keys => [objectJson, mapsJson, listsJson];
+  List<JsonKey<dynamic, dynamic>> get keys => [
+        objectJson,
+        mapsJson,
+        listsJson,
+        polymorphicJson,
+      ];
 }
 
 void main() {
@@ -153,12 +255,38 @@ void main() {
     'bool': true,
   };
 
+  final polymorphicA =
+      TestPolymorphicA.populated(str: 'testStr', d: 12.5, i: 10, b: false);
+
+  final polymorphicJsonA = {
+    kPolymorphicTypeJsonKey: 'TestPolymorphicA',
+    'string': 'testStr',
+    'double': 12.5,
+    'int': 10,
+    'bool': false,
+  };
+
+  final polymorphicB = TestPolymorphicB.populated(
+      str: 'testStr2',
+      d: 102.5,
+      stringList: ['string1', 'string2'],
+      doubleList: [2.5, 3.5]);
+
+  final polymorphicJsonB = {
+    kPolymorphicTypeJsonKey: 'TestPolymorphicB',
+    'string': 'testStr2',
+    'double': 102.5,
+    'stringList': ['string1', 'string2'],
+    'doubleList': [2.5, 3.5],
+  };
+
   final maps = TestMaps.populated(
     stringMap: {'string1': 'value1', 'string2': 'value2'},
     doubleMap: {'double1': 2.5, 'double2': 3.5},
     intMap: {'int1': 3, 'int2': 4},
     booleanMap: {'bool1': false, 'bool2': true},
     objectMap: {'object1': object1, 'object2': object2},
+    polymorphicMap: {'test': polymorphicA, 'test2': polymorphicB},
   );
 
   final mapsJson = {
@@ -182,6 +310,22 @@ void main() {
       'object1': objectJson1,
       'object2': objectJson2,
     },
+    'polymorphicMap': {
+      'test': {
+        kPolymorphicTypeJsonKey: 'TestPolymorphicA',
+        'string': 'testStr',
+        'double': 12.5,
+        'int': 10,
+        'bool': false,
+      },
+      'test2': {
+        kPolymorphicTypeJsonKey: 'TestPolymorphicB',
+        'string': 'testStr2',
+        'double': 102.5,
+        'stringList': ['string1', 'string2'],
+        'doubleList': [2.5, 3.5],
+      },
+    },
   };
 
   final lists = TestLists.populated(
@@ -190,6 +334,7 @@ void main() {
     intList: [3, 4],
     boolList: [false, true],
     objectList: [object1, object2],
+    polymorphicList: [polymorphicA, polymorphicB],
   );
 
   final listsJson = {
@@ -213,15 +358,42 @@ void main() {
       objectJson1,
       objectJson2,
     ],
+    'polymorphicList': [
+      {
+        kPolymorphicTypeJsonKey: 'TestPolymorphicA',
+        'string': 'testStr',
+        'double': 12.5,
+        'int': 10,
+        'bool': false,
+      },
+      {
+        kPolymorphicTypeJsonKey: 'TestPolymorphicB',
+        'string': 'testStr2',
+        'double': 102.5,
+        'stringList': ['string1', 'string2'],
+        'doubleList': [2.5, 3.5],
+      },
+    ],
   };
 
-  final aggregateObject =
-      TestAggregateObject.populated(object: object1, maps: maps, lists: lists);
+  final aggregateObject1 = TestAggregateObject.populated(
+      object: object1, maps: maps, lists: lists, polymorphic: polymorphicA);
 
-  final aggregateObjectJson = {
+  final aggregateObjectJson1 = {
     'object': objectJson1,
     'maps': mapsJson,
     'lists': listsJson,
+    'polymorphic': polymorphicJsonA,
+  };
+
+  final aggregateObject2 = TestAggregateObject.populated(
+      object: object2, maps: maps, lists: lists, polymorphic: polymorphicB);
+
+  final aggregateObjectJson2 = {
+    'object': objectJson2,
+    'maps': mapsJson,
+    'lists': listsJson,
+    'polymorphic': polymorphicJsonB,
   };
 
   test(
@@ -231,7 +403,10 @@ void main() {
       expect(object2.toJson(), objectJson2);
       expect(maps.toJson(), mapsJson);
       expect(lists.toJson(), listsJson);
-      expect(aggregateObject.toJson(), aggregateObjectJson);
+      expect(polymorphicA.toJson(), polymorphicJsonA);
+      expect(polymorphicB.toJson(), polymorphicJsonB);
+      expect(aggregateObject1.toJson(), aggregateObjectJson1);
+      expect(aggregateObject2.toJson(), aggregateObjectJson2);
     },
   );
 
@@ -239,6 +414,10 @@ void main() {
     expect(() => TestObject.parser().toJson(), throwsA(isA<StateError>()));
     expect(() => TestMaps.parser().toJson(), throwsA(isA<StateError>()));
     expect(() => TestLists.parser().toJson(), throwsA(isA<StateError>()));
+    expect(
+        () => TestPolymorphicA.parser().toJson(), throwsA(isA<StateError>()));
+    expect(
+        () => TestPolymorphicB.parser().toJson(), throwsA(isA<StateError>()));
     expect(() => TestAggregateObject.parser().toJson(),
         throwsA(isA<StateError>()));
   });
@@ -250,7 +429,10 @@ void main() {
       expect(TestObject.parse(objectJson2), object2);
       expect(TestMaps.parse(mapsJson), maps);
       expect(TestLists.parse(listsJson), lists);
-      expect(TestAggregateObject.parse(aggregateObjectJson), aggregateObject);
+      expect(TestPolymorphicA.parse(polymorphicJsonA), polymorphicA);
+      expect(TestPolymorphicB.parse(polymorphicJsonB), polymorphicB);
+      expect(TestAggregateObject.parse(aggregateObjectJson1), aggregateObject1);
+      expect(TestAggregateObject.parse(aggregateObjectJson2), aggregateObject2);
     },
   );
 
@@ -272,15 +454,35 @@ void main() {
     expect(lists.myBoolList, [false, true]);
     expect(lists.myObjectList, [object1, object2]);
 
-    expect(aggregateObject.myObject, object1);
-    expect(aggregateObject.myMaps, maps);
-    expect(aggregateObject.myLists, lists);
+    expect(polymorphicA.myString, 'testStr');
+    expect(polymorphicA.myDouble, 12.5);
+    expect(polymorphicA.myInt, 10);
+    expect(polymorphicA.myBool, false);
+
+    expect(polymorphicB.myString, 'testStr2');
+    expect(polymorphicB.myDouble, 102.5);
+    expect(polymorphicB.myStringList, ['string1', 'string2']);
+    expect(polymorphicB.myDoubleList, [2.5, 3.5]);
+
+    expect(aggregateObject1.myObject, object1);
+    expect(aggregateObject1.myMaps, maps);
+    expect(aggregateObject1.myLists, lists);
+    expect(aggregateObject1.myPolymorphic, polymorphicA);
+
+    expect(aggregateObject2.myObject, object2);
+    expect(aggregateObject2.myMaps, maps);
+    expect(aggregateObject2.myLists, lists);
+    expect(aggregateObject2.myPolymorphic, polymorphicB);
   });
 
   test('JSON value getter throws for parser', () {
     expect(() => TestObject.parser().myString, throwsA(isA<StateError>()));
     expect(() => TestMaps.parser().myStringMap, throwsA(isA<StateError>()));
     expect(() => TestLists.parser().myStringList, throwsA(isA<StateError>()));
+    expect(
+        () => TestPolymorphicA.parser().myString, throwsA(isA<StateError>()));
+    expect(
+        () => TestPolymorphicB.parser().myString, throwsA(isA<StateError>()));
     expect(() => TestAggregateObject.parser().myObject,
         throwsA(isA<StateError>()));
   });
@@ -292,7 +494,20 @@ void main() {
         throwsA(isA<StateError>()));
     expect(
         () => lists.stringList.populate(['test']), throwsA(isA<StateError>()));
-    expect(() => aggregateObject.objectJson.populate(object2),
+    expect(() => polymorphicA.stringJson.populate('test'),
         throwsA(isA<StateError>()));
+    expect(() => polymorphicB.stringJson.populate('test'),
+        throwsA(isA<StateError>()));
+    expect(() => aggregateObject1.objectJson.populate(object2),
+        throwsA(isA<StateError>()));
+  });
+
+  test('Polymorphic parse', () {
+    final TestPolymorphic polymorphic1 = TestPolymorphic.polymorphicParse(
+        polymorphicJsonA, [TestPolymorphicA.parser, TestPolymorphicB.parser]);
+    expect(polymorphic1, polymorphicA);
+    final TestPolymorphic polymorphic2 = TestPolymorphic.polymorphicParse(
+        polymorphicJsonB, [TestPolymorphicA.parser, TestPolymorphicB.parser]);
+    expect(polymorphic2, polymorphicB);
   });
 }

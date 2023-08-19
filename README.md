@@ -10,6 +10,7 @@ json_types
 ## Example:
 
 * [Simple types](#simple-types)
+* [Inheritance/Polymorphic types](#inheritancepolymorphic-types)
 * [Maps](#maps)
 * [Lists](#lists)
 * [Complex data types](#complex-data-types)
@@ -84,6 +85,141 @@ TestObject.parse(objectJson2); /// Deserialize JSON into a [TestObject].
 object2.toJson(); /// Serialize a [TestObject] into JSON.
 ```
 
+## Inheritance/Polymorphic types:
+```dart
+/// Example of a class that extends [Json] and uses [JsonKey]s to define
+/// objects with inheritance.
+sealed class TestPolymorphic extends JsonPolymorphic<TestPolymorphic> {
+  final stringJson = Json.string('string');
+  final doubleJson = Json.double('double');
+
+  String get myString => stringJson.value;
+  double get myDouble => doubleJson.value;
+
+  TestPolymorphic() : super();
+
+  TestPolymorphic.parse(super.json) : super.parse();
+
+  factory TestPolymorphic.polymorphicParse(
+    Map<String, dynamic> json,
+    List<TestPolymorphic Function()> parsers,
+  ) =>
+      JsonPolymorphic.polymorphicParse(json, parsers);
+
+  TestPolymorphic.populated({
+    required String str,
+    required double d,
+  }) : super() {
+    stringJson.populate(str);
+    doubleJson.populate(d);
+  }
+
+  @override
+  List<JsonKey<dynamic, dynamic>> get keys => [stringJson, doubleJson];
+}
+
+/// Example of a class that extends [TestPolymorphic] and uses [JsonKey]s to
+/// define objects with inheritance.
+final class TestPolymorphicA extends TestPolymorphic {
+  final intJson = Json.int('int');
+  final boolJson = Json.boolean('bool');
+
+  int get myInt => intJson.value;
+  bool get myBool => boolJson.value;
+
+  TestPolymorphicA.parser() : super();
+
+  TestPolymorphicA.parse(super.json) : super.parse();
+
+  TestPolymorphicA.populated({
+    required super.str,
+    required super.d,
+    required int i,
+    required bool b,
+  }) : super.populated() {
+    intJson.populate(i);
+    boolJson.populate(b);
+  }
+
+  @override
+  List<JsonKey<dynamic, dynamic>> get keys =>
+      [...super.keys, intJson, boolJson];
+}
+
+/// Another example of a class that extends [TestPolymorphic] and uses [JsonKey]s to
+/// define objects with inheritance.
+final class TestPolymorphicB extends TestPolymorphic {
+  final stringListJson = Json.stringList('stringList');
+  final doubleListJson = Json.doubleList('doubleList');
+
+  List<String> get myStringList => stringListJson.value;
+  List<double> get myDoubleList => doubleListJson.value;
+
+  TestPolymorphicB.parser() : super();
+
+  TestPolymorphicB.parse(super.json) : super.parse();
+
+  TestPolymorphicB.populated({
+    required super.str,
+    required super.d,
+    required List<String> stringList,
+    required List<double> doubleList,
+  }) : super.populated() {
+    stringListJson.populate(stringList);
+    doubleListJson.populate(doubleList);
+  }
+
+  @override
+  List<JsonKey<dynamic, dynamic>> get keys =>
+      [...super.keys, stringListJson, doubleListJson];
+}
+
+/// Create a [TestPolymorphicA] from in-memory data.
+final polymorphicA = TestPolymorphicA.populated(
+  str: 'testStr',
+  d: 12.5,
+  i: 10,
+  b: false,
+);
+
+/// A JSON representation of [polymorphicA].
+final polymorphicJsonA = {
+  '__poly__': 'TestPolymorphicA',
+  'string': 'testStr',
+  'double': 12.5,
+  'int': 10,
+  'bool': false,
+};
+
+final polymorphicB = TestPolymorphicB.populated(
+  str: 'testStr',
+  d: 12.5,
+  stringList: ['string1', 'string2'],
+  doubleList: [2.5, 3.5],
+);
+
+/// A JSON representation of [polymorphicB].
+final polymorphicJsonB = {
+  '__poly__': 'TestPolymorphicB',
+  'string': 'testStr',
+  'double': 12.5,
+  'stringList': ['string1', 'string2'],
+  'doubleList': [2.5, 3.5],
+};
+
+/// Deserializes JSON into a [TestPolymorphicA].
+TestPolymorphic.polymorphicParse(
+  polymorphicJsonA,
+  [TestPolymorphicA.parser(), TestPolymorphicB.parser()],
+);
+
+/// Deserializes JSON into a [TestPolymorphicB].
+TestPolymorphic.polymorphicParse(
+  polymorphicJsonB,
+  [TestPolymorphicA.parser(), TestPolymorphicB.parser()],
+);
+```
+
 ## Maps:
 ```dart
 /// Example of a class that extends [Json] and uses [JsonKey]s to define
@@ -94,12 +230,14 @@ final class TestMaps extends Json {
   final intMap = Json.intMap('myIntMapKey');
   final booleanMap = Json.booleanMap('myBooleanMapKey');
   final objectMap = Json.objectMap('myObjectMapKey', TestObject.parser);
+  final polymorphicMap = Json.polymorphicMap('myPolymorphicMapKey', TestPolymorphic.parser);
 
   Map<String, String> get myStringMap => stringMap.value;
   Map<String, double> get myDoubleMap => doubleMap.value;
   Map<String, int> get myIntMap => intMap.value;
   Map<String, bool> get myBooleanMap => booleanMap.value;
   Map<String, TestObject> get myObjectMap => objectMap.value;
+  Map<String, TestPolymorphic> get myPolymorphicMap => polymorphicMap.value;
 
   TestMaps.parser() : super();
 
@@ -111,17 +249,19 @@ final class TestMaps extends Json {
     required Map<String, int> intMap,
     required Map<String, bool> booleanMap,
     required Map<String, TestObject> objectMap,
+    required Map<String, TestPolymorphic> polymorphicMap,
   }) : super() {
     this.stringMap.populate(stringMap);
     this.doubleMap.populate(doubleMap);
     this.intMap.populate(intMap);
     this.booleanMap.populate(booleanMap);
     this.objectMap.populate(objectMap);
+    this.polymorphicMap.populate(polymorphicMap);
   }
 
   @override
   List<JsonKey<dynamic, dynamic>> get keys =>
-      [stringMap, doubleMap, intMap, booleanMap, objectMap];
+      [stringMap, doubleMap, intMap, booleanMap, objectMap, polymorphicMap];
 }
 
 /// Create a [TestMaps] from in-memory data.
@@ -131,6 +271,7 @@ final maps = TestMaps.populated(
   intMap: {'int1': 3, 'int2': 4},
   booleanMap: {'bool1': false, 'bool2': true},
   objectMap: {'object1': object1, 'object2': object2},
+  polymorphicMap: {'test1': polymorphicA, 'test2': polymorphicB},
 );
 
 /// A JSON representation of [maps].
@@ -155,6 +296,10 @@ final mapsJson = {
     'object1': objectJson1,
     'object2': objectJson2,
   },
+  'polymorphicMap': {
+    'test1': polymorphicJsonA,
+    'test2': polymorphicJsonB,
+  },
 };
 
 TestMaps.parse(mapsJson); /// Deserialize JSON into a [TestMaps].
@@ -171,12 +316,14 @@ final class TestLists extends Json {
   final intList = Json.intList('myIntListKey');
   final boolList = Json.booleanList('myBoolListKey');
   final objectList = Json.objectList('myObjectListKey', TestObject.parser);
+  final polymorphicList = Json.polymorphicList('myPolymorphicListKey', TestPolymorphic.parser);
 
   List<String> get myStringList => stringList.value;
   List<double> get myDoubleList => doubleList.value;
   List<int> get myIntList => intList.value;
   List<bool> get myBoolList => boolList.value;
   List<TestObject> get myObjectList => objectList.value;
+  List<TestPolymorphic> get myPolymorphicList => polymorphicList.value;
 
   TestLists.parser() : super();
 
@@ -188,17 +335,19 @@ final class TestLists extends Json {
     required List<int> intList,
     required List<bool> boolList,
     required List<TestObject> objectList,
+    required List<TestPolymorphic> polymorphicList,
   }) : super() {
     this.stringList.populate(stringList);
     this.doubleList.populate(doubleList);
     this.intList.populate(intList);
     this.boolList.populate(boolList);
     this.objectList.populate(objectList);
+    this.polymorphicList.populate(polymorphicList);
   }
 
   @override
   List<JsonKey<dynamic, dynamic>> get keys =>
-      [stringList, doubleList, intList, boolList, objectList];
+      [stringList, doubleList, intList, boolList, objectList, polymorphicList];
 }
 
 /// Create a [TestLists] from in-memory data.
@@ -208,6 +357,7 @@ final lists = TestLists.populated(
   intList: [3, 4],
   boolList: [false, true],
   objectList: [object1, object2],
+  polymorphicList: [polymorphicA, polymorphicB],
 );
 
 /// A JSON representation of [lists].
@@ -231,6 +381,10 @@ final listsJson = {
   'objectList': [
     objectJson1,
     objectJson2,
+  ],
+  'polymorphicList': [
+    polymorphicJsonA,
+    polymorphicJsonB,
   ],
 };
 

@@ -1,10 +1,12 @@
 import 'package:equatable/equatable.dart';
 
+import 'json_polymorphic.dart';
 import 'keys/keys.dart';
 import 'lists/json_list.dart';
 import 'maps/json_map.dart';
 import 'primitives/json_primitive.dart';
 
+export 'json_polymorphic.dart';
 export 'keys/keys.dart';
 
 /// A class that can be serialized to and from json.
@@ -26,7 +28,7 @@ abstract class Json extends Equatable {
     }
   }
 
-  /// Used for constructing a [JsonObject] parser.
+  /// Used for constructing a [JsonObjectKey] parser.
   const Json() : super();
 
   /// Deserialize a json map
@@ -54,9 +56,14 @@ abstract class Json extends Equatable {
   static JsonBoolean boolean(String key) => JsonBoolean.parser(key);
 
   /// A [JsonKey] that parses a [Json] object.
-  static JsonObject<T> object<T extends Json>(
+  static JsonObjectKey<T> object<T extends Json>(
           String key, T Function() parser) =>
-      JsonObject.parser(key, parser);
+      JsonObjectKey.parser(key, parser);
+
+  /// A [JsonKey] that parses a [JsonPolymorphic] object.
+  static JsonPolymorphicKey<T> polymorphic<T extends JsonPolymorphic<T>>(
+          String key, List<T Function()> parsers) =>
+      JsonPolymorphicKey.parser(key, parsers);
 
   /// A [JsonKey] that parses a list of strings.
   static JsonStringList stringList(String key) => JsonStringList.parser(key);
@@ -71,9 +78,15 @@ abstract class Json extends Equatable {
   static JsonBooleanList booleanList(String key) => JsonBooleanList.parser(key);
 
   /// A [JsonKey] that parses a list of [Json] objects.
-  static JsonObjectList<T> objectList<T extends Json>(
+  static JsonObjectKeyList<T> objectList<T extends Json>(
           String key, T Function() parserConstructor) =>
-      JsonObjectList.parser(key, parserConstructor);
+      JsonObjectKeyList.parser(key, parserConstructor);
+
+  /// A [JsonKey] that parses a list of [JsonPolymorphic] objects.
+  static JsonPolymorphicKeyList<T>
+      polymorphicList<T extends JsonPolymorphic<T>>(
+              String key, List<T Function()> parsers) =>
+          JsonPolymorphicKeyList.parser(key, parsers);
 
   /// A [JsonKey] that parses a map of strings.
   static JsonStringMap stringMap(String key) => JsonStringMap.parser(key);
@@ -88,26 +101,29 @@ abstract class Json extends Equatable {
   static JsonBooleanMap booleanMap(String key) => JsonBooleanMap.parser(key);
 
   /// A [JsonKey] that parses a map of [Json] objects.
-  static JsonObjectMap<T> objectMap<T extends Json>(
+  static JsonObjectKeyMap<T> objectMap<T extends Json>(
           String key, T Function() parserConstructor) =>
-      JsonObjectMap.parser(key, parserConstructor);
+      JsonObjectKeyMap.parser(key, parserConstructor);
+
+  /// A [JsonKey] that parses a map of [JsonPolymorphic] objects.
+  static JsonPolymorphicKeyMap<T> polymorphicMap<T extends JsonPolymorphic<T>>(
+          String key, List<T Function()> parsers) =>
+      JsonPolymorphicKeyMap.parser(key, parsers);
 }
 
 /// A [JsonKey] that parses a [Json] object.
-final class JsonObject<T extends Json>
+final class JsonObjectKey<T extends Json>
     extends JsonKey<T, Map<String, dynamic>> {
   /// Create a [JsonKey] that parses a [Json] object.
-  JsonObject.parser(
+  JsonObjectKey.parser(
     String key,
     T Function() parser,
   ) : super.parser(key, (json) => parser()..parse(json));
 
   /// Create a [JsonKey] that has already been populated with a value.
-  JsonObject.populated(super.key, super.val) : super.populated();
+  JsonObjectKey.populated(super.key, super.val) : super.populated();
 
   /// Serialize the populated [Json] object.
   @override
-  Map<String, dynamic> serialize(T value) => Map.fromEntries(value.keys.map(
-        (key) => MapEntry(key.key, key.serialized),
-      ));
+  Map<String, dynamic> serialize(T value) => value.toJson();
 }
