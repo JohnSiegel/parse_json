@@ -8,6 +8,7 @@ import 'primitives/json_primitive.dart';
 
 export 'json_polymorphic.dart';
 export 'keys/keys.dart';
+export 'primitives/json_primitive.dart';
 
 /// A class that can be serialized to and from json.
 abstract class Json extends Equatable {
