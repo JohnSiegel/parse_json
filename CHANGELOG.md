@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.2
+
+Fixed bug with polymorphic collection types.
+
 ## 2.0.1
 
 Improved method signature for polymorphic collection types.

@@ -29,10 +29,10 @@ final class JsonBooleanList extends _JsonPrimitiveList<bool> {
 }
 
 /// A [JsonKey] that parses a list of [Json] objects.
-final class JsonObjectKeyList<T extends Json>
-    extends _JsonList<T, Map<String, dynamic>> {
+final class JsonObjectKeyList<T extends Json> extends _JsonList<T, dynamic> {
   JsonObjectKeyList.parser(String key, T Function() parserConstructor)
-      : super.parser(key, (json) => parserConstructor()..parse(json));
+      : super.parser(key,
+            (json) => parserConstructor()..parse(json as Map<String, dynamic>));
 
   JsonObjectKeyList.populated(super.key, super.val) : super.populated();
 
@@ -43,10 +43,10 @@ final class JsonObjectKeyList<T extends Json>
 
 /// A [JsonKey] that parses a list of [JsonPolymorphic] objects.
 final class JsonPolymorphicKeyList<T extends JsonPolymorphic<T>>
-    extends _JsonList<T, Map<String, dynamic>> {
+    extends _JsonList<T, dynamic> {
   JsonPolymorphicKeyList.parser(
       String key, T Function(Map<String, dynamic>) parse)
-      : super.parser(key, parse);
+      : super.parser(key, (json) => parse(json as Map<String, dynamic>));
 
   JsonPolymorphicKeyList.populated(super.key, super.val) : super.populated();
 
