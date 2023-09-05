@@ -44,11 +44,11 @@ sealed class TestPolymorphic extends JsonPolymorphic<TestPolymorphic> {
 
   TestPolymorphic.parse(super.json) : super.parse();
 
-  factory TestPolymorphic.polymorphicParse(
-    Map<String, dynamic> json,
-    List<TestPolymorphic Function()> parsers,
-  ) =>
-      JsonPolymorphic.polymorphicParse(json, parsers);
+  factory TestPolymorphic.polymorphicParse(Map<String, dynamic> json) =>
+      JsonPolymorphic.polymorphicParse(json, [
+        TestPolymorphicA.parser,
+        TestPolymorphicB.parser,
+      ]);
 
   TestPolymorphic.populated({
     required String str,
@@ -120,8 +120,8 @@ final class TestLists extends Json {
   final intList = Json.intList('intList');
   final boolList = Json.booleanList('boolList');
   final objectList = Json.objectList('objectList', TestObject.parser);
-  final polymorphicList = Json.polymorphicList(
-      'polymorphicList', [TestPolymorphicA.parser, TestPolymorphicB.parser]);
+  final polymorphicList =
+      Json.polymorphicList('polymorphicList', TestPolymorphic.polymorphicParse);
 
   List<String> get myStringList => stringList.value;
   List<double> get myDoubleList => doubleList.value;
@@ -161,8 +161,8 @@ final class TestMaps extends Json {
   final intMap = Json.intMap('intMap');
   final booleanMap = Json.booleanMap('booleanMap');
   final objectMap = Json.objectMap('objectMap', TestObject.parser);
-  final polymorphicMap = Json.polymorphicMap(
-      'polymorphicMap', [TestPolymorphicA.parser, TestPolymorphicB.parser]);
+  final polymorphicMap =
+      Json.polymorphicMap('polymorphicMap', TestPolymorphic.polymorphicParse);
 
   Map<String, String> get myStringMap => stringMap.value;
   Map<String, double> get myDoubleMap => doubleMap.value;
@@ -502,11 +502,9 @@ void main() {
   });
 
   test('Polymorphic parse', () {
-    final TestPolymorphic polymorphic1 = TestPolymorphic.polymorphicParse(
-        polymorphicJsonA, [TestPolymorphicA.parser, TestPolymorphicB.parser]);
+    final polymorphic1 = TestPolymorphic.polymorphicParse(polymorphicJsonA);
     expect(polymorphic1, polymorphicA);
-    final TestPolymorphic polymorphic2 = TestPolymorphic.polymorphicParse(
-        polymorphicJsonB, [TestPolymorphicA.parser, TestPolymorphicB.parser]);
+    final polymorphic2 = TestPolymorphic.polymorphicParse(polymorphicJsonB);
     expect(polymorphic2, polymorphicB);
   });
 }

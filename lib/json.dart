@@ -86,8 +86,8 @@ abstract class Json extends Equatable {
   /// A [JsonKey] that parses a list of [JsonPolymorphic] objects.
   static JsonPolymorphicKeyList<T>
       polymorphicList<T extends JsonPolymorphic<T>>(
-              String key, List<T Function()> parsers) =>
-          JsonPolymorphicKeyList.parser(key, parsers);
+              String key, T Function(Map<String, dynamic>) parse) =>
+          JsonPolymorphicKeyList.parser(key, parse);
 
   /// A [JsonKey] that parses a map of strings.
   static JsonStringMap stringMap(String key) => JsonStringMap.parser(key);
@@ -108,8 +108,8 @@ abstract class Json extends Equatable {
 
   /// A [JsonKey] that parses a map of [JsonPolymorphic] objects.
   static JsonPolymorphicKeyMap<T> polymorphicMap<T extends JsonPolymorphic<T>>(
-          String key, List<T Function()> parsers) =>
-      JsonPolymorphicKeyMap.parser(key, parsers);
+          String key, T Function(Map<String, dynamic>) parse) =>
+      JsonPolymorphicKeyMap.parser(key, parse);
 }
 
 /// A [JsonKey] that parses a [Json] object.

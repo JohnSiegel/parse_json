@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.1
+
+Improved method signature for polymorphic collection types.
+
 ## 2.0.0
 
 Added support for polymorphic types.

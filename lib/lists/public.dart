@@ -44,9 +44,9 @@ final class JsonObjectKeyList<T extends Json>
 /// A [JsonKey] that parses a list of [JsonPolymorphic] objects.
 final class JsonPolymorphicKeyList<T extends JsonPolymorphic<T>>
     extends _JsonList<T, Map<String, dynamic>> {
-  JsonPolymorphicKeyList.parser(String key, List<T Function()> parsers)
-      : super.parser(
-            key, (json) => JsonPolymorphic.polymorphicParse(json, parsers));
+  JsonPolymorphicKeyList.parser(
+      String key, T Function(Map<String, dynamic>) parse)
+      : super.parser(key, parse);
 
   JsonPolymorphicKeyList.populated(super.key, super.val) : super.populated();
 

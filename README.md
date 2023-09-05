@@ -100,11 +100,11 @@ sealed class TestPolymorphic extends JsonPolymorphic<TestPolymorphic> {
 
   TestPolymorphic.parse(super.json) : super.parse();
 
-  factory TestPolymorphic.polymorphicParse(
-    Map<String, dynamic> json,
-    List<TestPolymorphic Function()> parsers,
-  ) =>
-      JsonPolymorphic.polymorphicParse(json, parsers);
+  factory TestPolymorphic.polymorphicParse(Map<String, dynamic> json) =>
+      JsonPolymorphic.polymorphicParse(json, [
+        TestPolymorphicA.parser,
+        TestPolymorphicB.parser,
+      ]);
 
   TestPolymorphic.populated({
     required String str,
@@ -208,16 +208,10 @@ final polymorphicJsonB = {
 };
 
 /// Deserializes JSON into a [TestPolymorphicA].
-TestPolymorphic.polymorphicParse(
-  polymorphicJsonA,
-  [TestPolymorphicA.parser(), TestPolymorphicB.parser()],
-);
+TestPolymorphic.polymorphicParse(polymorphicJsonA);
 
 /// Deserializes JSON into a [TestPolymorphicB].
-TestPolymorphic.polymorphicParse(
-  polymorphicJsonB,
-  [TestPolymorphicA.parser(), TestPolymorphicB.parser()],
-);
+TestPolymorphic.polymorphicParse(polymorphicJsonB);
 ```
 
 ## Maps:
@@ -230,7 +224,8 @@ final class TestMaps extends Json {
   final intMap = Json.intMap('myIntMapKey');
   final booleanMap = Json.booleanMap('myBooleanMapKey');
   final objectMap = Json.objectMap('myObjectMapKey', TestObject.parser);
-  final polymorphicMap = Json.polymorphicMap('myPolymorphicMapKey', TestPolymorphic.parser);
+  final polymorphicMap = 
+    Json.polymorphicMap('myPolymorphicMapKey', TestPolymorphic.polymorphicParse);
 
   Map<String, String> get myStringMap => stringMap.value;
   Map<String, double> get myDoubleMap => doubleMap.value;
@@ -316,7 +311,8 @@ final class TestLists extends Json {
   final intList = Json.intList('myIntListKey');
   final boolList = Json.booleanList('myBoolListKey');
   final objectList = Json.objectList('myObjectListKey', TestObject.parser);
-  final polymorphicList = Json.polymorphicList('myPolymorphicListKey', TestPolymorphic.parser);
+  final polymorphicList = 
+    Json.polymorphicList('myPolymorphicListKey', TestPolymorphic.polymorphicParse);
 
   List<String> get myStringList => stringList.value;
   List<double> get myDoubleList => doubleList.value;

@@ -71,11 +71,11 @@ sealed class ExamplePolymorphic extends JsonPolymorphic<ExamplePolymorphic> {
 
   ExamplePolymorphic.parse(super.json) : super.parse();
 
-  factory ExamplePolymorphic.polymorphicParse(
-    Map<String, dynamic> json,
-    List<ExamplePolymorphic Function()> parsers,
-  ) =>
-      JsonPolymorphic.polymorphicParse(json, parsers);
+  factory ExamplePolymorphic.polymorphicParse(Map<String, dynamic> json) =>
+      JsonPolymorphic.polymorphicParse(json, [
+        ExamplePolymorphicA.parser,
+        ExamplePolymorphicB.parser,
+      ]);
 
   ExamplePolymorphic.populated({
     required String str,
@@ -187,9 +187,7 @@ final class ExampleMaps extends Json {
   final booleanMap = Json.booleanMap('myBooleanMapKey');
   final objectMap = Json.objectMap('myObjectMapKey', ExampleObject.parser);
   final polymorphicMap = Json.polymorphicMap(
-    'myPolymorphicMapKey',
-    [ExamplePolymorphicA.parser, ExamplePolymorphicB.parser],
-  );
+      'myPolymorphicMapKey', ExamplePolymorphic.polymorphicParse);
 
   Map<String, String> get myStringMap => stringMap.value;
   Map<String, double> get myDoubleMap => doubleMap.value;
@@ -270,9 +268,7 @@ final class ExampleLists extends Json {
   final boolList = Json.booleanList('myBoolListKey');
   final objectList = Json.objectList('myObjectListKey', ExampleObject.parser);
   final polymorphicList = Json.polymorphicList(
-    'myPolymorphicListKey',
-    [ExamplePolymorphicA.parser, ExamplePolymorphicB.parser],
-  );
+      'myPolymorphicListKey', ExamplePolymorphic.polymorphicParse);
 
   List<String> get myStringList => stringList.value;
   List<double> get myDoubleList => doubleList.value;
@@ -397,17 +393,9 @@ void main() {
   assert(polymorphicB.toJson() == polymorphicJsonB);
   assert(ExamplePolymorphicB.parse(polymorphicJsonB) == polymorphicB);
 
-  assert(ExamplePolymorphic.polymorphicParse(polymorphicJsonA, [
-        ExamplePolymorphicA.parser,
-        ExamplePolymorphicB.parser,
-      ]) ==
-      polymorphicA);
+  assert(ExamplePolymorphic.polymorphicParse(polymorphicJsonA) == polymorphicA);
 
-  assert(ExamplePolymorphic.polymorphicParse(polymorphicJsonB, [
-        ExamplePolymorphicA.parser,
-        ExamplePolymorphicB.parser,
-      ]) ==
-      polymorphicB);
+  assert(ExamplePolymorphic.polymorphicParse(polymorphicJsonB) == polymorphicB);
 
   assert(maps.toJson() == mapsJson);
   assert(ExampleMaps.parse(mapsJson) == maps);
