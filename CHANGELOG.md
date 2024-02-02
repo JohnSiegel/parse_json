@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.0.0+1
+
+Updated readme.
+
 ## 3.0.0
 
 Introduced optional types.
