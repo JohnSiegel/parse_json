@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.0.1
+
+Fixed bug with obfuscation interfering with polymorphic types.
+
 ## 3.0.0+1
 
 Updated readme.
