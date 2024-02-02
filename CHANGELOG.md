@@ -1,5 +1,9 @@
 # Changelog
 
+## 3.0.0
+
+Introduced optional types.
+
 ## 2.0.2
 
 Fixed bug with polymorphic collection types.

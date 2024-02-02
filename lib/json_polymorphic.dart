@@ -51,3 +51,20 @@ final class JsonPolymorphicKey<T extends JsonPolymorphic<T>>
   @override
   Map<String, dynamic> serialize(T value) => value.toJson();
 }
+
+/// A [JsonKey] that parses an optional [JsonPolymorphic] object.
+final class JsonOptionalPolymorphicKey<T extends JsonPolymorphic<T>>
+    extends JsonKey<T?, Map<String, dynamic>?> {
+  JsonOptionalPolymorphicKey.parser(String key, List<T Function()> parsers)
+      : super.parser(
+            key,
+            (json) => json != null
+                ? JsonPolymorphic.polymorphicParse(json, parsers)
+                : null);
+
+  JsonOptionalPolymorphicKey.populated(super.key, super.val)
+      : super.populated();
+
+  @override
+  Map<String, dynamic>? serialize(T? value) => value?.toJson();
+}

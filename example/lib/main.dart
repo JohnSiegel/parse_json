@@ -7,11 +7,15 @@ final class ExampleObject extends Json {
   final doubleJson = Json.double('myDoubleKey');
   final intJson = Json.int('myIntKey');
   final boolJson = Json.boolean('myBoolKey');
+  final optionalStringJson = Json.optionalString('optionalStringKey');
+  final optionalIntJson = Json.optionalInt('optionalIntKey');
 
   String get myString => stringJson.value;
   double get myDouble => doubleJson.value;
   int get myInt => intJson.value;
   bool get myBool => boolJson.value;
+  String? get optionalString => optionalStringJson.value;
+  int? get optionalInt => optionalIntJson.value;
 
   ExampleObject.parser() : super();
 
@@ -22,16 +26,26 @@ final class ExampleObject extends Json {
     required double d,
     required int i,
     required bool b,
+    String? oS,
+    int? oI,
   }) : super() {
     stringJson.populate(str);
     doubleJson.populate(d);
     intJson.populate(i);
     boolJson.populate(b);
+    optionalStringJson.populate(oS);
+    optionalIntJson.populate(oI);
   }
 
   @override
-  List<JsonKey<dynamic, dynamic>> get keys =>
-      [stringJson, doubleJson, intJson, boolJson];
+  List<JsonKey<dynamic, dynamic>> get keys => [
+        stringJson,
+        doubleJson,
+        intJson,
+        boolJson,
+        optionalStringJson,
+        optionalIntJson
+      ];
 }
 
 /// Create a [ExampleObject] from in-memory data.
@@ -47,15 +61,17 @@ final objectJson1 = {
 };
 
 /// Create another [ExampleObject] from in-memory data.
-final object2 =
-    ExampleObject.populated(str: 'exampleStr2', d: 102.5, i: -5, b: true);
+final object2 = ExampleObject.populated(
+    str: 'exampleStr2', d: 102.5, i: -5, b: true, oS: 'hello', oI: 42);
 
 /// A JSON representation of [object2].
 final objectJson2 = {
-  'string': 'exampleStr2',
-  'double': 102.5,
-  'int': -5,
-  'bool': true,
+  'myStringKey': 'exampleStr2',
+  'myDoubleKey': 102.5,
+  'myIntKey': -5,
+  'myBoolKey': true,
+  'optionalStringKey': 'hello',
+  'optionalIntKey': 42,
 };
 
 /// Example of a class that extends [Json] and uses [JsonKey]s to define
@@ -267,6 +283,7 @@ final class ExampleLists extends Json {
   final intList = Json.intList('myIntListKey');
   final boolList = Json.booleanList('myBoolListKey');
   final objectList = Json.objectList('myObjectListKey', ExampleObject.parser);
+  final optionalStringList = Json.optionalStringList('optionalStringListKey');
   final polymorphicList = Json.polymorphicList(
       'myPolymorphicListKey', ExamplePolymorphic.polymorphicParse);
 
@@ -275,6 +292,7 @@ final class ExampleLists extends Json {
   List<int> get myIntList => intList.value;
   List<bool> get myBoolList => boolList.value;
   List<ExampleObject> get myObjectList => objectList.value;
+  List<String>? get myOptionalStringList => optionalStringList.value;
   List<ExamplePolymorphic> get myPolymorphicList => polymorphicList.value;
 
   ExampleLists.parser() : super();
@@ -288,6 +306,7 @@ final class ExampleLists extends Json {
     required List<bool> boolList,
     required List<ExampleObject> objectList,
     required List<ExamplePolymorphic> polymorphicList,
+    List<String>? optionalStringList,
   }) : super() {
     this.stringList.populate(stringList);
     this.doubleList.populate(doubleList);
@@ -295,11 +314,19 @@ final class ExampleLists extends Json {
     this.boolList.populate(boolList);
     this.objectList.populate(objectList);
     this.polymorphicList.populate(polymorphicList);
+    this.optionalStringList.populate(optionalStringList);
   }
 
   @override
-  List<JsonKey<dynamic, dynamic>> get keys =>
-      [stringList, doubleList, intList, boolList, objectList, polymorphicList];
+  List<JsonKey<dynamic, dynamic>> get keys => [
+        stringList,
+        doubleList,
+        intList,
+        boolList,
+        objectList,
+        optionalStringList,
+        polymorphicList
+      ];
 }
 
 /// Create a [ExampleLists] from in-memory data.

@@ -9,6 +9,14 @@ sealed class _JsonList<T, Serializable>
   _JsonList.populated(super.key, super.val) : super.populated();
 }
 
+sealed class _JsonOptionalList<T, Serializable>
+    extends JsonKey<List<T>?, List<Serializable>?> {
+  _JsonOptionalList.parser(String key, T Function(Serializable) parser)
+      : super.parser(key, (list) => list?.map((e) => parser(e)).toList());
+
+  _JsonOptionalList.populated(super.key, super.val) : super.populated();
+}
+
 /// A [JsonKey] that parses a list of primitives.
 abstract base class _JsonPrimitiveList<T> extends _JsonList<T, T> {
   _JsonPrimitiveList.parser(String key) : super.parser(key, parsePrimitive);
@@ -17,4 +25,17 @@ abstract base class _JsonPrimitiveList<T> extends _JsonList<T, T> {
 
   @override
   List<T> serialize(List<T> val) => val;
+}
+
+/// A [JsonKey] that parses an optional list of primitives.
+abstract base class _JsonOptionalPrimitiveList<T>
+    extends _JsonOptionalList<T, T> {
+  _JsonOptionalPrimitiveList.parser(String key)
+      : super.parser(key, parsePrimitive);
+
+  _JsonOptionalPrimitiveList.populated(super.key, super.val)
+      : super.populated();
+
+  @override
+  List<T>? serialize(List<T>? val) => val;
 }
