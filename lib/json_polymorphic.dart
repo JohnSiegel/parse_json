@@ -9,20 +9,22 @@ abstract class JsonPolymorphic<T extends JsonPolymorphic<T>> extends Json {
 
   JsonPolymorphic.parse(super.json) : super.parse();
 
+  /// The type specifier for this polymorphic object. This is used to determine
+  /// the type of the object when parsing.
+  String get type;
+
   /// Parse a json map while maintaining polymorphic types.
   static T polymorphicParse<T extends JsonPolymorphic<T>>(
       Map<String, dynamic> json, List<T Function()> parsers) {
     final type = json[kPolymorphicTypeJsonKey];
     if (type != null) {
-      return parsers.firstWhere(
-          (element) => element().runtimeType.toString() == type,
+      return parsers.firstWhere((element) => element().type == type,
           orElse: () => throw FormatException(
               'Polymorphic type "$type" is not included for this key.', json))()
         ..parse(json);
     } else {
       throw FormatException(
-        'Polymorphic type key "$kPolymorphicTypeJsonKey" is'
-        'required.',
+        'Polymorphic type key "$kPolymorphicTypeJsonKey" is required.',
         json,
       );
     }
@@ -35,7 +37,7 @@ abstract class JsonPolymorphic<T extends JsonPolymorphic<T>> extends Json {
       (val) => throw ArgumentError(
           'Polymorphic type key "$kPolymorphicTypeJsonKey" is reserved. You'
           'have set this key with value: $val.'),
-      ifAbsent: () => runtimeType.toString(),
+      ifAbsent: () => type,
     );
 }
 

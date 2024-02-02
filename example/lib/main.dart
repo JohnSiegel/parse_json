@@ -108,6 +108,9 @@ sealed class ExamplePolymorphic extends JsonPolymorphic<ExamplePolymorphic> {
 /// Example of a class that extends [ExamplePolymorphic] and uses [JsonKey]s to
 /// define objects with inheritance.
 final class ExamplePolymorphicA extends ExamplePolymorphic {
+  @override
+  String get type => 'ExamplePolymorphicA';
+
   final intJson = Json.int('int');
   final boolJson = Json.boolean('bool');
 
@@ -136,6 +139,9 @@ final class ExamplePolymorphicA extends ExamplePolymorphic {
 /// Another example of a class that extends [ExamplePolymorphic] and uses
 /// [JsonKey]s to define objects with inheritance.
 final class ExamplePolymorphicB extends ExamplePolymorphic {
+  @override
+  String get type => 'ExamplePolymorphicB';
+
   final stringListJson = Json.stringList('stringList');
   final doubleListJson = Json.doubleList('doubleList');
 

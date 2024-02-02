@@ -95,6 +95,9 @@ sealed class TestPolymorphic extends JsonPolymorphic<TestPolymorphic> {
 }
 
 final class TestPolymorphicA extends TestPolymorphic {
+  @override
+  String get type => 'TestPolymorphicA';
+
   final intJson = Json.int('int');
   final boolJson = Json.boolean('bool');
 
@@ -121,6 +124,9 @@ final class TestPolymorphicA extends TestPolymorphic {
 }
 
 final class TestPolymorphicB extends TestPolymorphic {
+  @override
+  String get type => 'TestPolymorphicB';
+
   final stringListJson = Json.stringList('stringList');
   final doubleListJson = Json.doubleList('doubleList');
 
