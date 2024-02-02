@@ -10,6 +10,7 @@ json_types
 ## Example:
 
 * [Simple types](#simple-types)
+* [Optional types](#optional-types)
 * [Inheritance/Polymorphic types](#inheritancepolymorphic-types)
 * [Maps](#maps)
 * [Lists](#lists)
@@ -78,6 +79,73 @@ final objectJson2 = {
   'string': 'testStr2',
   'double': 102.5,
   'int': -5,
+  'bool': true,
+};
+
+TestObject.parse(objectJson2); /// Deserialize JSON into a [TestObject].
+object2.toJson(); /// Serialize a [TestObject] into JSON.
+```
+
+## Optional types:
+```dart
+/// Example of a class that extends [Json] and uses [JsonKey]s to define
+/// optional properties.
+final class TestOptionalObject extends Json {
+  final stringJson = Json.optionalString('myStringKey');
+  final doubleJson = Json.optionalDouble('myDoubleKey');
+  final intJson = Json.optionalInt('myIntKey');
+  final boolJson = Json.optionalBoolean('myBoolKey');
+
+  String? get myString => stringJson.value;
+  double? get myDouble => doubleJson.value;
+  int? get myInt => intJson.value;
+  bool? get myBool => boolJson.value;
+
+  TestObject.parser() : super();
+
+  TestObject.parse(super.json) : super.parse();
+
+  TestObject.populated({
+    String? str,
+    double? d,
+    int? i,
+    bool? b,
+  }) : super() {
+    stringJson.populate(str);
+    doubleJson.populate(d);
+    intJson.populate(i);
+    boolJson.populate(b);
+  }
+
+  @override
+  List<JsonKey<dynamic, dynamic>> get keys =>
+      [stringJson, doubleJson, intJson, boolJson];
+}
+
+/// Create a [TestOptionalObject] from in-memory data.
+final object1 = TestObject.populated(str: 'testStr', d: 12.5, i: 10, b: false);
+
+/// A JSON representation of [object1].
+final objectJson1 = {
+  'myStringKey': 'testStr',
+  'myDoubleKey': 12.5,
+  'myIntKey': 10,
+  'myBoolKey': false,
+};
+
+/// Parse the JSON representation of [object1] into a [TestObject].
+TestObject.parse(objectJson1);
+
+/// Convert [object1] to JSON.
+object1.toJson();
+
+/// Create a [TestOptionalObject] from in-memory data.
+final object2 =
+    TestObject.populated(str: 'testStr2', b: true);
+
+/// A JSON representation of [object2].
+final objectJson2 = {
+  'string': 'testStr2',
   'bool': true,
 };
 
