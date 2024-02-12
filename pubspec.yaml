@@ -1,15 +1,14 @@
-name: json_types
-description: Type safe JSON serialization/deserialization for Dart with no code generation or reflection.
-version: 3.0.1
-repository: https://github.com/JohnSiegel/json_types
-issue_tracker: https://github.com/JohnSiegel/json_types/issues
+name: parse_json
+description: Type safe and simple JSON deserialization for Dart with no code generation or reflection.
+version: 1.0.0
+repository: https://github.com/JohnSiegel/parse_json
+issue_tracker: https://github.com/JohnSiegel/parse_json/issues
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
-
-dependencies:
-  equatable: ^2.0.5
   
 dev_dependencies:
   lints: ^2.1.0
   test: ^1.24.5
+dependencies:
+  equatable: ^2.0.5
