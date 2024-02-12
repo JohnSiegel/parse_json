@@ -1,3 +1,4 @@
+import 'nested_objects.dart';
 import 'polymorphism.dart';
 import 'simple_objects.dart';
 
@@ -9,5 +10,6 @@ void check(bool test) {
 
 void main() {
   simpleObjects();
+  nestedObjects();
   polymorphism();
 }
