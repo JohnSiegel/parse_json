@@ -207,43 +207,44 @@ final class ExampleObject {
   factory ExampleObject.fromJson(Map<String, dynamic> json) => parse(json);
 }
 
-final object1 = ExampleObject(
-  myString: 'exampleStr',
-  myDouble: 12.5,
-  myInt: 10,
-  myBool: false,
-);
-
-final objectJson1 = {
-  'myString': 'exampleStr',
-  'myDouble': 12.5,
-  'myInt': 10,
-  'myBool': false,
-};
-
-final object2 = ExampleObject(
-  myString: 'exampleStr2',
-  myDouble: 102.5,
-  myInt: -5,
-  myBool: true,
-  myOptionalString: 'hello',
-  myOptionalInt: 42,
-);
-
-final objectJson2 = {
-  'myString': 'exampleStr2',
-  'myDouble': 102.5,
-  'myInt': -5,
-  'myBool': true,
-  'myOptionalString': 'hello',
-  'myOptionalInt': 42,
-};
-
 void main() {
   registerType<ExampleObject>(
       ExampleObject.new, ExampleObject.nonPrimitiveMembers);
 
+  final object1 = ExampleObject(
+    myString: 'exampleStr',
+    myDouble: 12.5,
+    myInt: 10,
+    myBool: false,
+  );
+
+  final objectJson1 = {
+    'myString': 'exampleStr',
+    'myDouble': 12.5,
+    'myInt': 10,
+    'myBool': false,
+  };
+
   assert(ExampleObject.fromJson(objectJson1) == object1);
+
+  final object2 = ExampleObject(
+    myString: 'exampleStr2',
+    myDouble: 102.5,
+    myInt: -5,
+    myBool: true,
+    myOptionalString: 'hello',
+    myOptionalInt: 42,
+  );
+
+  final objectJson2 = {
+    'myString': 'exampleStr2',
+    'myDouble': 102.5,
+    'myInt': -5,
+    'myBool': true,
+    'myOptionalString': 'hello',
+    'myOptionalInt': 42,
+  };
+
   assert(ExampleObject.fromJson(objectJson2) == object2);
 }
 ```
@@ -303,32 +304,34 @@ final class ComplexObject extends Equatable {
   ];
 }
 
-final object1 = SimpleObject(myString: 'exampleStr', myDouble: 12.5);
-final objectJson1 = {'myString': 'exampleStr', 'myDouble': 12.5};
-
-final object2 = SimpleObject(myString: 'exampleStr2', myDouble: 102.5);
-final objectJson2 = {'myString': 'exampleStr2', 'myDouble': 102.5};
-
-final complexObject = ComplexObject(
-  exampleList: [object1, object2],
-  exampleMap: {'object1': object1, 'object2': object2},
-  exampleObject: object1,
-);
-
-final complexObjectJson = {
-  'exampleList': [objectJson1, objectJson2],
-  'exampleMap': {'object1': objectJson1, 'object2': objectJson2},
-  'exampleObject': objectJson1,
-};
-
 void main() {
   registerType<SimpleObject>(
       SimpleObject.new, SimpleObject.nonPrimitiveMembers);
   registerType<ComplexObject>(
       ComplexObject.new, ComplexObject.nonPrimitiveMembers);
 
+  final object1 = SimpleObject(myString: 'exampleStr', myDouble: 12.5);
+  final objectJson1 = {'myString': 'exampleStr', 'myDouble': 12.5};
+
   assert(SimpleObject.fromJson(objectJson1) == object1);
+
+  final object2 = SimpleObject(myString: 'exampleStr2', myDouble: 102.5);
+  final objectJson2 = {'myString': 'exampleStr2', 'myDouble': 102.5};
+
   assert(SimpleObject.fromJson(objectJson2) == object2);
+
+  final complexObject = ComplexObject(
+    exampleList: [object1, object2],
+    exampleMap: {'object1': object1, 'object2': object2},
+    exampleObject: object1,
+  );
+
+  final complexObjectJson = {
+    'exampleList': [objectJson1, objectJson2],
+    'exampleMap': {'object1': objectJson1, 'object2': objectJson2},
+    'exampleObject': objectJson1,
+  };
+
   assert(ComplexObject.fromJson(complexObjectJson) == complexObject);
 }
 ```
@@ -399,40 +402,6 @@ final class SubClassB extends BaseClass {
   List<Object?> get props => [...super.props, myExampleObject];
 }
 
-final objectA = SubClassA(myString: 'exampleStr', myDouble: 12.5, myInt: 10);
-final objectJsonA = {
-  'type': 'A',
-  'myString': 'exampleStr',
-  'myDouble': 12.5,
-  'myInt': 10,
-};
-
-final objectB = SubClassB(
-  myString: 'exampleStr2',
-  myDouble: 102.5,
-  myExampleObject: ExampleObject(
-    myString: 'exampleStr',
-    myDouble: 12.5,
-    myInt: 10,
-    myBool: false,
-  ),
-);
-
-final objectJsonB = {
-  'type': 'B',
-  'myString': 'exampleStr2',
-  'myDouble': 102.5,
-  'myExampleObject': {
-    'myString': 'exampleStr',
-    'myDouble': 12.5,
-    'myInt': 10,
-    'myBool': false,
-  },
-};
-
-final baseClass = BaseClass(myString: 'exampleStr', myDouble: 12.5);
-final baseClassJson = {'myString': 'exampleStr', 'myDouble': 12.5};
-
 void main() {
   registerType<ExampleObject>(ExampleObject.new, ExampleObject.nonPrimitiveMembers); // Defined elsewhere
   
@@ -447,6 +416,40 @@ void main() {
     },
     (BaseClass.new, BaseClass.nonPrimitiveMembers),
   );
+
+  final objectA = SubClassA(myString: 'exampleStr', myDouble: 12.5, myInt: 10);
+  final objectJsonA = {
+    'type': 'A',
+    'myString': 'exampleStr',
+    'myDouble': 12.5,
+    'myInt': 10,
+  };
+
+  final objectB = SubClassB(
+    myString: 'exampleStr2',
+    myDouble: 102.5,
+    myExampleObject: ExampleObject(
+      myString: 'exampleStr',
+      myDouble: 12.5,
+      myInt: 10,
+      myBool: false,
+    ),
+  );
+
+  final objectJsonB = {
+    'type': 'B',
+    'myString': 'exampleStr2',
+    'myDouble': 102.5,
+    'myExampleObject': {
+      'myString': 'exampleStr',
+      'myDouble': 12.5,
+      'myInt': 10,
+      'myBool': false,
+    },
+  };
+
+  final baseClass = BaseClass(myString: 'exampleStr', myDouble: 12.5);
+  final baseClassJson = {'myString': 'exampleStr', 'myDouble': 12.5};
 
   assert(SubClassA.fromJson(objectJsonA) == objectA);
   assert(SubClassB.fromJson(objectJsonB) == objectB);

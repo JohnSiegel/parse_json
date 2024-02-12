@@ -66,46 +66,6 @@ final class ExamplePolymorphicB extends ExamplePolymorphic {
   List<Object?> get props => [...super.props, stringList, doubleList];
 }
 
-final polymorphicA = ExamplePolymorphicA(
-  myString: 'exampleStr',
-  myDouble: 12.5,
-  myInt: 10,
-  myBool: false,
-);
-
-final polymorphicJsonA = {
-  ExamplePolymorphic.polymorphicKey: ExamplePolymorphicA.polymorphicId,
-  'myString': 'exampleStr',
-  'myDouble': 12.5,
-  'myInt': 10,
-  'myBool': false,
-};
-
-final polymorphicB = ExamplePolymorphicB(
-  myString: 'exampleStr',
-  myDouble: 12.5,
-  stringList: ['string1', 'string2'],
-  doubleList: [2.5, 3.5],
-);
-
-final polymorphicJsonB = {
-  ExamplePolymorphic.polymorphicKey: ExamplePolymorphicB.polymorphicId,
-  'myString': 'exampleStr',
-  'myDouble': 12.5,
-  'stringList': ['string1', 'string2'],
-  'doubleList': [2.5, 3.5],
-};
-
-final base = ExamplePolymorphic(
-  myString: 'exampleStr',
-  myDouble: 12.5,
-);
-
-final baseJson = {
-  'myString': 'exampleStr',
-  'myDouble': 12.5,
-};
-
 void polymorphism() {
   registerType<ExamplePolymorphicA>(
       ExamplePolymorphicA.new, ExamplePolymorphicA.nonPrimitiveMembers);
@@ -120,9 +80,50 @@ void polymorphism() {
     ExamplePolymorphic.nonPrimitiveMembers
   ));
 
+  final polymorphicA = ExamplePolymorphicA(
+    myString: 'exampleStr',
+    myDouble: 12.5,
+    myInt: 10,
+    myBool: false,
+  );
+
+  final polymorphicJsonA = {
+    ExamplePolymorphic.polymorphicKey: ExamplePolymorphicA.polymorphicId,
+    'myString': 'exampleStr',
+    'myDouble': 12.5,
+    'myInt': 10,
+    'myBool': false,
+  };
+
+  final polymorphicB = ExamplePolymorphicB(
+    myString: 'exampleStr',
+    myDouble: 12.5,
+    stringList: ['string1', 'string2'],
+    doubleList: [2.5, 3.5],
+  );
+
+  final polymorphicJsonB = {
+    ExamplePolymorphic.polymorphicKey: ExamplePolymorphicB.polymorphicId,
+    'myString': 'exampleStr',
+    'myDouble': 12.5,
+    'stringList': ['string1', 'string2'],
+    'doubleList': [2.5, 3.5],
+  };
+
+  final base = ExamplePolymorphic(
+    myString: 'exampleStr',
+    myDouble: 12.5,
+  );
+
+  final baseJson = {
+    'myString': 'exampleStr',
+    'myDouble': 12.5,
+  };
+
   check(ExamplePolymorphicA.fromJson(polymorphicJsonA) == polymorphicA);
   check(ExamplePolymorphicB.fromJson(polymorphicJsonB) == polymorphicB);
   check(ExamplePolymorphic.fromJson(baseJson) == base);
+
   check(ExamplePolymorphic.fromJson(polymorphicJsonA) == polymorphicA);
   check(ExamplePolymorphic.fromJson(polymorphicJsonB) == polymorphicB);
 }

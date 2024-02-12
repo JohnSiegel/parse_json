@@ -44,32 +44,33 @@ final class ComplexObject extends Equatable {
   List<Object?> get props => [exampleList, exampleMap, exampleObject];
 }
 
-final object1 = SimpleObject(myString: 'exampleStr', myDouble: 12.5);
-final objectJson1 = {'myString': 'exampleStr', 'myDouble': 12.5};
-
-final object2 = SimpleObject(myString: 'exampleStr2', myDouble: 102.5);
-final objectJson2 = {'myString': 'exampleStr2', 'myDouble': 102.5};
-
-final complexObject = ComplexObject(
-  exampleList: [object1, object2],
-  exampleMap: {'object1': object1, 'object2': object2},
-  exampleObject: object1,
-);
-
-final complexObjectJson = {
-  'exampleList': [objectJson1, objectJson2],
-  'exampleMap': {'object1': objectJson1, 'object2': objectJson2},
-  'exampleObject': objectJson1,
-};
-
 void nestedObjects() {
   registerType<SimpleObject>(
       SimpleObject.new, SimpleObject.nonPrimitiveMembers);
   registerType<ComplexObject>(
       ComplexObject.new, ComplexObject.nonPrimitiveMembers);
 
+  final object1 = SimpleObject(myString: 'exampleStr', myDouble: 12.5);
+  final objectJson1 = {'myString': 'exampleStr', 'myDouble': 12.5};
+
   check(SimpleObject.fromJson(objectJson1) == object1);
+
+  final object2 = SimpleObject(myString: 'exampleStr2', myDouble: 102.5);
+  final objectJson2 = {'myString': 'exampleStr2', 'myDouble': 102.5};
+
   check(SimpleObject.fromJson(objectJson2) == object2);
+
+  final complexObject = ComplexObject(
+    exampleList: [object1, object2],
+    exampleMap: {'object1': object1, 'object2': object2},
+    exampleObject: object1,
+  );
+
+  final complexObjectJson = {
+    'exampleList': [objectJson1, objectJson2],
+    'exampleMap': {'object1': objectJson1, 'object2': objectJson2},
+    'exampleObject': objectJson1,
+  };
 
   check(ComplexObject.fromJson(complexObjectJson) == complexObject);
 }

@@ -35,42 +35,43 @@ final class ExampleObject extends Equatable {
       ];
 }
 
-final object1 = ExampleObject(
-  myString: 'exampleStr',
-  myDouble: 12.5,
-  myInt: 10,
-  myBool: false,
-);
-
-final objectJson1 = {
-  'myString': 'exampleStr',
-  'myDouble': 12.5,
-  'myInt': 10,
-  'myBool': false,
-};
-
-final object2 = ExampleObject(
-  myString: 'exampleStr2',
-  myDouble: 102.5,
-  myInt: -5,
-  myBool: true,
-  myOptionalString: 'hello',
-  myOptionalInt: 42,
-);
-
-final objectJson2 = {
-  'myString': 'exampleStr2',
-  'myDouble': 102.5,
-  'myInt': -5,
-  'myBool': true,
-  'myOptionalString': 'hello',
-  'myOptionalInt': 42,
-};
-
 void simpleObjects() {
   registerType<ExampleObject>(
       ExampleObject.new, ExampleObject.nonPrimitiveMembers);
 
+  final object1 = ExampleObject(
+    myString: 'exampleStr',
+    myDouble: 12.5,
+    myInt: 10,
+    myBool: false,
+  );
+
+  final objectJson1 = {
+    'myString': 'exampleStr',
+    'myDouble': 12.5,
+    'myInt': 10,
+    'myBool': false,
+  };
+
   check(ExampleObject.fromJson(objectJson1) == object1);
+
+  final object2 = ExampleObject(
+    myString: 'exampleStr2',
+    myDouble: 102.5,
+    myInt: -5,
+    myBool: true,
+    myOptionalString: 'hello',
+    myOptionalInt: 42,
+  );
+
+  final objectJson2 = {
+    'myString': 'exampleStr2',
+    'myDouble': 102.5,
+    'myInt': -5,
+    'myBool': true,
+    'myOptionalString': 'hello',
+    'myOptionalInt': 42,
+  };
+
   check(ExampleObject.fromJson(objectJson2) == object2);
 }
