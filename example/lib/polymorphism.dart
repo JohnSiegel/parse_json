@@ -6,8 +6,6 @@ import 'main.dart';
 base class ExamplePolymorphic extends Equatable {
   static const polymorphicKey = 'type';
 
-  static const Map<String, Type> nonPrimitiveMembers = {};
-
   final String myString;
   final double myDouble;
 
@@ -16,7 +14,18 @@ base class ExamplePolymorphic extends Equatable {
     required this.myDouble,
   }) : super();
 
-  factory ExamplePolymorphic.fromJson(Map<String, dynamic> json) => parse(json);
+  factory ExamplePolymorphic.fromJson(Map<String, dynamic> json) =>
+      polymorphicParse(
+          polymorphicKey,
+          json,
+          {
+            ExamplePolymorphicA.polymorphicId: ExamplePolymorphicA.fromJson,
+            ExamplePolymorphicB.polymorphicId: ExamplePolymorphicB.fromJson,
+          },
+          baseDefinition: DefinedType(ExamplePolymorphic.new, {
+            'myString': primitive,
+            'myDouble': primitive,
+          }));
 
   @override
   List<Object?> get props => [myString, myDouble];
@@ -24,8 +33,6 @@ base class ExamplePolymorphic extends Equatable {
 
 final class ExamplePolymorphicA extends ExamplePolymorphic {
   static const polymorphicId = 'A';
-
-  static const Map<String, Type> nonPrimitiveMembers = {};
 
   final int myInt;
   final bool myBool;
@@ -38,7 +45,12 @@ final class ExamplePolymorphicA extends ExamplePolymorphic {
   }) : super();
 
   factory ExamplePolymorphicA.fromJson(Map<String, dynamic> json) =>
-      parse(json);
+      parse(ExamplePolymorphicA.new, json, {
+        'myString': primitive,
+        'myDouble': primitive,
+        'myInt': primitive,
+        'myBool': primitive,
+      });
 
   @override
   List<Object?> get props => [...super.props, myInt, myBool];
@@ -46,8 +58,6 @@ final class ExamplePolymorphicA extends ExamplePolymorphic {
 
 final class ExamplePolymorphicB extends ExamplePolymorphic {
   static const polymorphicId = 'B';
-
-  static const Map<String, Type> nonPrimitiveMembers = {};
 
   final List<String> stringList;
   final List<double> doubleList;
@@ -60,26 +70,18 @@ final class ExamplePolymorphicB extends ExamplePolymorphic {
   }) : super();
 
   factory ExamplePolymorphicB.fromJson(Map<String, dynamic> json) =>
-      parse(json);
+      parse(ExamplePolymorphicB.new, json, {
+        'myString': primitive,
+        'myDouble': primitive,
+        'stringList': primitive,
+        'doubleList': primitive,
+      });
 
   @override
   List<Object?> get props => [...super.props, stringList, doubleList];
 }
 
 void polymorphism() {
-  registerType<ExamplePolymorphicA>(
-      ExamplePolymorphicA.new, ExamplePolymorphicA.nonPrimitiveMembers);
-  registerType<ExamplePolymorphicB>(
-      ExamplePolymorphicB.new, ExamplePolymorphicB.nonPrimitiveMembers);
-  registerPolymorphicType<ExamplePolymorphic>(
-      ExamplePolymorphic.polymorphicKey, {
-    ExamplePolymorphicA.polymorphicId: ExamplePolymorphicA,
-    ExamplePolymorphicB.polymorphicId: ExamplePolymorphicB
-  }, (
-    ExamplePolymorphic.new,
-    ExamplePolymorphic.nonPrimitiveMembers
-  ));
-
   final polymorphicA = ExamplePolymorphicA(
     myString: 'exampleStr',
     myDouble: 12.5,

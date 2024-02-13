@@ -5,8 +5,6 @@ import 'package:test/test.dart';
 base class TestPolymorphic extends Equatable {
   static const polymorphicKey = 'type';
 
-  static const Map<String, Type> nonPrimitiveMembers = {};
-
   final String myString;
   final double myDouble;
 
@@ -15,14 +13,25 @@ base class TestPolymorphic extends Equatable {
     required this.myDouble,
   }) : super();
 
+  factory TestPolymorphic.fromJson(Map<String, dynamic> json) =>
+      polymorphicParse(
+          polymorphicKey,
+          json,
+          {
+            TestPolymorphicA.polymorphicId: TestPolymorphicA.fromJson,
+            TestPolymorphicB.polymorphicId: TestPolymorphicB.fromJson,
+          },
+          baseDefinition: DefinedType(TestPolymorphic.new, {
+            'myString': primitive,
+            'myDouble': primitive,
+          }));
+
   @override
   List<Object?> get props => [myString, myDouble];
 }
 
 final class TestPolymorphicA extends TestPolymorphic {
   static const polymorphicId = 'A';
-
-  static const Map<String, Type> nonPrimitiveMembers = {};
 
   final int myInt;
   final bool myBool;
@@ -33,6 +42,14 @@ final class TestPolymorphicA extends TestPolymorphic {
     required this.myInt,
     required this.myBool,
   }) : super();
+
+  factory TestPolymorphicA.fromJson(Map<String, dynamic> json) =>
+      parse(TestPolymorphicA.new, json, {
+        'myString': primitive,
+        'myDouble': primitive,
+        'myInt': primitive,
+        'myBool': primitive,
+      });
 
   @override
   List<Object?> get props => [...super.props, myInt, myBool];
@@ -53,23 +70,19 @@ final class TestPolymorphicB extends TestPolymorphic {
     required this.myBoolList,
   }) : super();
 
+  factory TestPolymorphicB.fromJson(Map<String, dynamic> json) =>
+      parse(TestPolymorphicB.new, json, {
+        'myString': primitive,
+        'myDouble': primitive,
+        'myIntList': primitive,
+        'myBoolList': primitive,
+      });
+
   @override
   List<Object?> get props => [...super.props, myIntList, myBoolList];
 }
 
 void main() {
-  registerType<TestPolymorphicA>(
-      TestPolymorphicA.new, TestPolymorphicA.nonPrimitiveMembers);
-  registerType<TestPolymorphicB>(
-      TestPolymorphicB.new, TestPolymorphicB.nonPrimitiveMembers);
-  registerPolymorphicType<TestPolymorphic>(TestPolymorphic.polymorphicKey, {
-    TestPolymorphicA.polymorphicId: TestPolymorphicA,
-    TestPolymorphicB.polymorphicId: TestPolymorphicB
-  }, (
-    TestPolymorphic.new,
-    TestPolymorphic.nonPrimitiveMembers
-  ));
-
   test('Deserialize polymorphic types', () {
     final testPolymorphicA = TestPolymorphicA(
       myString: 'testStr',
@@ -107,10 +120,10 @@ void main() {
       'myDouble': 5.3,
     };
 
-    expect(parse<TestPolymorphicA>(testPolymorphicJsonA), testPolymorphicA);
-    expect(parse<TestPolymorphicB>(testPolymorphicJsonB), testPolymorphicB);
-    expect(parse<TestPolymorphic>(testPolymorphicJson), testPolymorphic);
-    expect(parse<TestPolymorphic>(testPolymorphicJsonA), testPolymorphicA);
-    expect(parse<TestPolymorphic>(testPolymorphicJsonB), testPolymorphicB);
+    expect(TestPolymorphicA.fromJson(testPolymorphicJsonA), testPolymorphicA);
+    expect(TestPolymorphicB.fromJson(testPolymorphicJsonB), testPolymorphicB);
+    expect(TestPolymorphic.fromJson(testPolymorphicJson), testPolymorphic);
+    expect(TestPolymorphic.fromJson(testPolymorphicJsonA), testPolymorphicA);
+    expect(TestPolymorphic.fromJson(testPolymorphicJsonB), testPolymorphicB);
   });
 }

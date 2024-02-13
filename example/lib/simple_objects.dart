@@ -11,8 +11,6 @@ final class ExampleObject extends Equatable {
   final String? myOptionalString;
   final int? myOptionalInt;
 
-  static const Map<String, Type> nonPrimitiveMembers = {};
-
   const ExampleObject({
     required this.myString,
     required this.myDouble,
@@ -22,7 +20,15 @@ final class ExampleObject extends Equatable {
     this.myOptionalInt,
   });
 
-  factory ExampleObject.fromJson(Map<String, dynamic> json) => parse(json);
+  factory ExampleObject.fromJson(Map<String, dynamic> json) =>
+      parse(ExampleObject.new, json, {
+        'myString': primitive,
+        'myDouble': primitive,
+        'myInt': primitive,
+        'myBool': primitive,
+        'myOptionalString': primitive,
+        'myOptionalInt': primitive,
+      });
 
   @override
   List<Object?> get props => [
@@ -36,9 +42,6 @@ final class ExampleObject extends Equatable {
 }
 
 void simpleObjects() {
-  registerType<ExampleObject>(
-      ExampleObject.new, ExampleObject.nonPrimitiveMembers);
-
   final object1 = ExampleObject(
     myString: 'exampleStr',
     myDouble: 12.5,

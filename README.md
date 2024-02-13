@@ -28,7 +28,7 @@ Then import the package in your Dart code:
 import 'package:parse_json/parse_json.dart';
 ```
 
-Then match up a constructor's named parameters with your JSON data:
+Then match up a constructor's named parameters with your JSON data, and make a factory function that uses `parse` to create an object from JSON. Here is an example of a simple class with primitive members:
 
 Data:
 ```json
@@ -46,22 +46,27 @@ final class ExampleObject {
   final String myString;
   final double myDouble;
 
-  static const Map<String, Type> nonPrimitiveMembers = {};
-
+  /// This is the constructor that will be called by `parse`
   const ExampleObject({
     required this.myString,
     required this.myDouble,
   });
 
-  factory ExampleObject.fromJson(Map<String, dynamic> json) => parse(json);
-}
-
-void main() {
-  registerType<ExampleObject>(ExampleObject.new, ExampleObject.nonPrimitiveMembers);
+  /// This is the factory function that will be used to parse the JSON
+  factory ExampleObject.fromJson(Map<String, dynamic> json) => 
+    parse(
+      ExampleObject.new, // the constructor to use
+      json,
+      // note: the keys in this map MUST match the named parameters of the constructor
+      {
+        'myString': primitive, // strings are primitive, so you just put primitive here
+        'myDouble': primitive, // doubles are primitive, so you just put primitive here
+      },
+    );
 }
 ```
 
-Note that you do not need to name your variables the same as the JSON keys. You can specify a special constructor with named parameters that match the JSON keys, and use whatever names you like for your member variables. You also do not need to parse every member variable from JSON, in cases where you have derived data. Your members can also be non-final, but most of the examples in this documentation use final members for consistency.
+Note that you do not need to name your member variables the same as the JSON keys. You can specify a special constructor with named parameters that match the JSON keys, and use whatever names you like for your member variables. You also do not need to parse every member variable from JSON, in cases where you have derived data. Your members can also be non-final, but most of the examples in this documentation use final members for consistency.
 
 Data:
 ```json
@@ -76,16 +81,14 @@ Dart Code:
 import 'package:parse_json/parse_json.dart';
 
 final class ExampleObject {
-  // members with names different from those in the constructor
+  /// Members with names different from those in the constructor
   final String name;
   final double originalHeight;
 
-  // non-final member
+  /// Non-final member
   double currentHeight;
 
-  static const Map<String, Type> nonPrimitiveMembers = {};
-
-  // constructor we use for JSON
+  /// Constructor that will be called by `parse`
   const ExampleObject.json({
     required String myString,
     required double myDouble,
@@ -93,19 +96,23 @@ final class ExampleObject {
        originalHeight = myDouble,
        currentHeight = myDouble;
 
-  // constructor we use for other stuff
+  /// Constructor we use for other stuff
   const ExampleObject(this.name, this.originalHeight, this.currentHeight);
 
-  // helpful factory function for parsing and constructing from JSON
-  factory ExampleObject.fromJson(Map<String, dynamic> json) => parse(json);
-}
-
-void main() {
-  registerType<ExampleObject>(ExampleObject.new, ExampleObject.nonPrimitiveMembers);
+  /// Factory function for parsing and constructing from JSON
+  factory ExampleObject.fromJson(Map<String, dynamic> json) => 
+    parse(
+      ExampleObject.new,
+      json,
+      {
+        'myString': primitive,
+        'myDouble': primitive,
+      },
+    );
 }
 ```
 
-At this point you have not used the `nonPrimitiveMembers` map for anything. This map is used for non-primitive types (Ones that are not `String`, `int`, `double`, `bool`, etc.). Here is an example of a class with non-primitive members:
+At this point you have used `primitive` for all of your keys. You will need to add more details to the map parameter in `parse` when you have a JSON property that is non-primitive (Ones that are not `String`, `int`, `double`, `bool`, or some `List` or `Map` of those). Here is an example of a class with non-primitive members:
 
 Data:
 ```json
@@ -131,14 +138,20 @@ final class ExampleObject {
   final String myString;
   final double myDouble;
 
-  static const Map<String, Type> nonPrimitiveMembers = {};
-
   const ExampleObject({
     required this.myString,
     required this.myDouble,
   });
 
-  factory ExampleObject.fromJson(Map<String, dynamic> json) => parse(json);
+  factory ExampleObject.fromJson(Map<String, dynamic> json) => 
+    parse(
+      ExampleObject.new,
+      json,
+      {
+        'myString': primitive,
+        'myDouble': primitive,
+      },
+    );
 }
 
 final class ComplexExampleObject {
@@ -148,12 +161,6 @@ final class ComplexExampleObject {
   final ExampleObject? myOptionalFriend;
   final List<ExampleObject> friendList;
 
-  static const Map<String, Type> nonPrimitiveMembers = {
-    'myFriend': ExampleObject,
-    'myOptionalFriend': Optional<ExampleObject>,
-    'friendList': List<ExampleObject>,
-  };
-
   const ComplexExampleObject({
     required this.myString,
     required this.myDouble,
@@ -162,25 +169,31 @@ final class ComplexExampleObject {
     this.myOptionalFriend,
   });
 
-  factory ComplexExampleObject.fromJson(Map<String, dynamic> json) => parse(json);
-}
-
-void main() {
-  registerType<ExampleObject>(ExampleObject.new, ExampleObject.nonPrimitiveMembers);
-  registerType<ComplexExampleObject>(ComplexExampleObject.new, ComplexExampleObject.nonPrimitiveMembers);
+  factory ComplexExampleObject.fromJson(Map<String, dynamic> json) => 
+    parse(
+      ComplexExampleObject.new,
+      json,
+      {
+        'myBoolList': primitive,
+        'myIntList': primitive,
+        'myFriend': ExampleObject.fromJson.required,
+        'myOptionalFriend': ExampleObject.fromJson.optional,
+        'friendList': ExampleObject.fromJson.list,
+      },
+    );
 }
 ```
 
 ## Example:
 
-* [Simple types](#simple-types)
-* [Nested types](#nested-types)
+* [Primitive types](#primitive-types)
+* [User-defined types](#user-defined-types)
 * [Inheritance/Polymorphic types](#inheritancepolymorphic-types)
 * [Full example](example/lib/main.dart)
 
-## Simple types:
+## Primitive types:
 
-If your class does only consists of primitive members (such as `String`, `int`, `double`, `bool`, etc.), you don't have to do anything special. Just define your class. This is because those types translate directly from JSON. Notice that the named parameters of the constructor match the JSON keys.
+If your defining a primitive property (such as `String`, `int`, `double`, `bool`, or some `List` or `Map` of one of those), you can use the `primitive` constant for your property. Here is an example of a simple class that only has primitive members:
 
 ```dart
 import 'package:parse_json/parse_json.dart';
@@ -193,8 +206,6 @@ final class ExampleObject {
   final String? myOptionalString;
   final int? myOptionalInt;
 
-  static const Map<String, Type> nonPrimitiveMembers = {};
-
   const ExampleObject({
     required this.myString,
     required this.myDouble,
@@ -204,87 +215,54 @@ final class ExampleObject {
     this.myOptionalInt,
   });
 
-  factory ExampleObject.fromJson(Map<String, dynamic> json) => parse(json);
-}
-
-void main() {
-  registerType<ExampleObject>(
-      ExampleObject.new, ExampleObject.nonPrimitiveMembers);
-
-  final object1 = ExampleObject(
-    myString: 'exampleStr',
-    myDouble: 12.5,
-    myInt: 10,
-    myBool: false,
-  );
-
-  final objectJson1 = {
-    'myString': 'exampleStr',
-    'myDouble': 12.5,
-    'myInt': 10,
-    'myBool': false,
-  };
-
-  assert(ExampleObject.fromJson(objectJson1) == object1);
-
-  final object2 = ExampleObject(
-    myString: 'exampleStr2',
-    myDouble: 102.5,
-    myInt: -5,
-    myBool: true,
-    myOptionalString: 'hello',
-    myOptionalInt: 42,
-  );
-
-  final objectJson2 = {
-    'myString': 'exampleStr2',
-    'myDouble': 102.5,
-    'myInt': -5,
-    'myBool': true,
-    'myOptionalString': 'hello',
-    'myOptionalInt': 42,
-  };
-
-  assert(ExampleObject.fromJson(objectJson2) == object2);
+  factory ExampleObject.fromJson(Map<String, dynamic> json) => 
+    parse(
+      ExampleObject.new,
+      json,
+      {
+        'myString': primitive,
+        'myDouble': primitive,
+        'myInt': primitive,
+        'myBool': primitive,
+        'myOptionalString': primitive,
+        'myOptionalInt': primitive,
+      }
+    );
 }
 ```
 
-## Nested types:
+## User-defined types:
 
-If your class has any members that are not primitive types, you need to register the type, and provide a map of the non-primitive members along with their JSON key (must match the constructor named parameter).
+For non-primitive types (user-defined types), you must use the `.required`, `.optional`, `.list`, `.map`, `.stringMap`, or `.intMap` methods on the user-defined type's `fromJson` factory function.
 
 ```dart
 import 'package:parse_json/parse_json.dart';
 
-final class SimpleObject extends Equatable {
+final class SimpleObject {
   final String myString;
   final double myDouble;
-
-  static const Map<String, Type> nonPrimitiveMembers = {};
 
   const SimpleObject({
     required this.myString,
     required this.myDouble,
   });
 
-  factory SimpleObject.fromJson(Map<String, dynamic> json) => parse(json);
-
-  @override
-  List<Object?> get props => [myString, myDouble];
+  factory SimpleObject.fromJson(Map<String, dynamic> json) => 
+    parse(
+      SimpleObject.new,
+      json,
+      {
+        'myString': primitive,
+        'myDouble': primitive,
+      }
+    );
 }
 
-final class ComplexObject extends Equatable {
+final class ComplexObject {
   final List<SimpleObject> exampleList;
   final Map<String, SimpleObject> exampleMap;
   final SimpleObject? optionalExampleObject;
   final SimpleObject exampleObject;
-
-  static const Map<String, Type> nonPrimitiveMembers = {
-    'exampleList': List<SimpleObject>,
-    'exampleMap': Map<String, SimpleObject>,
-    'optionalExampleObject': Optional<SimpleObject>,
-    'exampleObject': SimpleObject,
-  };
 
   const ComplexObject({
     required this.exampleList,
@@ -293,73 +271,50 @@ final class ComplexObject extends Equatable {
     this.optionalExampleObject,
   });
 
-  factory ComplexObject.fromJson(Map<String, dynamic> json) => parse(json);
-
-  @override
-  List<Object?> get props => [
-    exampleList, 
-    exampleMap, 
-    exampleObject, 
-    optionalExampleObject,
-  ];
-}
-
-void main() {
-  registerType<SimpleObject>(
-      SimpleObject.new, SimpleObject.nonPrimitiveMembers);
-  registerType<ComplexObject>(
-      ComplexObject.new, ComplexObject.nonPrimitiveMembers);
-
-  final object1 = SimpleObject(myString: 'exampleStr', myDouble: 12.5);
-  final objectJson1 = {'myString': 'exampleStr', 'myDouble': 12.5};
-
-  assert(SimpleObject.fromJson(objectJson1) == object1);
-
-  final object2 = SimpleObject(myString: 'exampleStr2', myDouble: 102.5);
-  final objectJson2 = {'myString': 'exampleStr2', 'myDouble': 102.5};
-
-  assert(SimpleObject.fromJson(objectJson2) == object2);
-
-  final complexObject = ComplexObject(
-    exampleList: [object1, object2],
-    exampleMap: {'object1': object1, 'object2': object2},
-    exampleObject: object1,
-  );
-
-  final complexObjectJson = {
-    'exampleList': [objectJson1, objectJson2],
-    'exampleMap': {'object1': objectJson1, 'object2': objectJson2},
-    'exampleObject': objectJson1,
-  };
-
-  assert(ComplexObject.fromJson(complexObjectJson) == complexObject);
+  factory ComplexObject.fromJson(Map<String, dynamic> json) => 
+    parse(
+      ComplexObject.new,
+      json,
+      {
+        'exampleList': SimpleObject.fromJson.list,
+        'exampleMap': SimpleObject.fromJson.stringMap,
+        'exampleObject': SimpleObject.fromJson.required,
+        'optionalExampleObject': SimpleObject.fromJson.optional,
+      }
+    );
 }
 ```
 
 ## Inheritance/Polymorphic types:
 
-With polymorphic base types, in order to register them you need to use `registerPolymorphicType` instead of `registerType`. You also need to provide a `polymorphicKey` and a `polymorphicId` for each subclass. The `polymorphicKey` is the key in the JSON that will be used to determine the type of the object. The `polymorphicId` is the value of the `polymorphicKey` that will be used to determine the type of the object. The `polymorphicId` must be unique for each subclass.
+With polymorphic base types, you need to use `polymorphicParse`. You will need to provide a `polymorphicKey` and a `polymorphicId` for each subclass. The `polymorphicKey` is the key in the JSON that will be used to determine the type of the object. The `polymorphicId` is the value of the `polymorphicKey` that will be used to determine the type of the object. You must provide the `fromJson` factory functions to the `derivedTypes` parameter of `polymorphicParse`, and use the `polymorphicId` of each subclass as the key in the map. You can also provide a `baseDefinition` to the `polymorphicParse` function that will be used to parse the base class if it is not abstract and `polymorphicKey` is missing from the JSON.
 
 ```dart
 import 'package:parse_json/parse_json.dart';
 
-final class BaseClass extends Equatable {
+final class BaseClass {
   static const polymorphicKey = 'type';
   
   final String myString;
   final double myDouble;
-
-  static const Map<String, Type> nonPrimitiveMembers = {};
 
   const BaseClass({
     required this.myString,
     required this.myDouble,
   });
 
-  factory BaseClass.fromJson(Map<String, dynamic> json) => parse(json);
-
-  @override
-  List<Object?> get props => [myString, myDouble];
+  factory BaseClass.fromJson(Map<String, dynamic> json) => 
+    polymorphicParse(
+      polymorphicKey,
+      json,
+      {
+        SubClassA.polymorphicId: SubClassA.fromJson,
+        SubClassB.polymorphicId: SubClassB.fromJson,
+      },
+      baseDefinition: DefinedType(BaseClass.new, {
+        'myString': primitive,
+        'myDouble': primitive,
+    }));
 }
 
 final class SubClassA extends BaseClass {
@@ -367,18 +322,22 @@ final class SubClassA extends BaseClass {
 
   final int myInt;
 
-  static const Map<String, Type> nonPrimitiveMembers = {};
-
   const SubClassA({
     required super.myString,
     required super.myDouble,
     required this.myInt,
   }) : super();
 
-  factory SubClassA.fromJson(Map<String, dynamic> json) => parse(json);
-
-  @override
-  List<Object?> get props => [...super.props, myInt];
+  factory SubClassA.fromJson(Map<String, dynamic> json) => 
+    parse(
+      SubClassA.new,
+      json,
+      {
+        'myString': primitive,
+        'myDouble': primitive,
+        'myInt': primitive,
+      },
+    );
 }
 
 final class SubClassB extends BaseClass {
@@ -386,78 +345,22 @@ final class SubClassB extends BaseClass {
 
   final ExampleObject myExampleObject;
 
-  static const Map<String, Type> nonPrimitiveMembers = {
-    'myExampleObject': ExampleObject,
-  };
-
   const SubClassB({
     required super.myString,
     required super.myDouble,
     required this.myExampleObject,
   }) : super();
 
-  factory SubClassB.fromJson(Map<String, dynamic> json) => parse(json);
-
-  @override
-  List<Object?> get props => [...super.props, myExampleObject];
-}
-
-void main() {
-  registerType<ExampleObject>(ExampleObject.new, ExampleObject.nonPrimitiveMembers); // Defined elsewhere
-  
-  registerType<SubClassA>(SubClassA.new, SubClassA.nonPrimitiveMembers);
-  registerType<SubClassB>(SubClassB.new, SubClassB.nonPrimitiveMembers);
-  
-  registerPolymorphicType<BaseClass>(
-    BaseClass.polymorphicKey,
-    {
-      SubClassA.polymorphicId: SubClassA,
-      SubClassB.polymorphicId: SubClassB,
-    },
-    (BaseClass.new, BaseClass.nonPrimitiveMembers),
-  );
-
-  final objectA = SubClassA(myString: 'exampleStr', myDouble: 12.5, myInt: 10);
-  final objectJsonA = {
-    'type': 'A',
-    'myString': 'exampleStr',
-    'myDouble': 12.5,
-    'myInt': 10,
-  };
-
-  final objectB = SubClassB(
-    myString: 'exampleStr2',
-    myDouble: 102.5,
-    myExampleObject: ExampleObject(
-      myString: 'exampleStr',
-      myDouble: 12.5,
-      myInt: 10,
-      myBool: false,
-    ),
-  );
-
-  final objectJsonB = {
-    'type': 'B',
-    'myString': 'exampleStr2',
-    'myDouble': 102.5,
-    'myExampleObject': {
-      'myString': 'exampleStr',
-      'myDouble': 12.5,
-      'myInt': 10,
-      'myBool': false,
-    },
-  };
-
-  final baseClass = BaseClass(myString: 'exampleStr', myDouble: 12.5);
-  final baseClassJson = {'myString': 'exampleStr', 'myDouble': 12.5};
-
-  assert(SubClassA.fromJson(objectJsonA) == objectA);
-  assert(SubClassB.fromJson(objectJsonB) == objectB);
-  assert(BaseClass.fromJson(baseClassJson) == baseClass);
-
-  // polymorphism
-  assert(BaseClass.fromJson(objectJsonA) == objectA);
-  assert(BaseClass.fromJson(objectJsonB) == objectB);
+  factory SubClassB.fromJson(Map<String, dynamic> json) => 
+    parse(
+      SubClassB.fromJson,
+      json,
+      {
+        'myString': primitive,
+        'myDouble': primitive,
+        'myExampleObject': ExampleObject.fromJson.required,
+      },
+    );
 }
 ```
 

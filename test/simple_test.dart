@@ -8,14 +8,20 @@ final class TestObject extends Equatable {
   final int myInt;
   final bool myBool;
 
-  static const Map<String, Type> nonPrimitiveMembers = {};
-
   const TestObject({
     required this.myString,
     required this.myDouble,
     required this.myInt,
     required this.myBool,
   }) : super();
+
+  factory TestObject.fromJson(Map<String, dynamic> json) =>
+      parse(TestObject.new, json, {
+        'myString': primitive,
+        'myDouble': primitive,
+        'myInt': primitive,
+        'myBool': primitive,
+      });
 
   @override
   List<Object?> get props => [myString, myDouble, myInt, myBool];
@@ -26,8 +32,6 @@ final class TestObject2 extends Equatable {
   final double myDouble;
   final int myInt;
   final bool myBool;
-
-  static const Map<String, Type> nonPrimitiveMembers = {};
 
   const TestObject2({
     required String notMyString,
@@ -40,14 +44,38 @@ final class TestObject2 extends Equatable {
         myBool = notMyBool,
         super();
 
+  factory TestObject2.fromJson(Map<String, dynamic> json) =>
+      parse(TestObject2.new, json, {
+        'notMyString': primitive,
+        'notMyDouble': primitive,
+        'notMyInt': primitive,
+        'notMyBool': primitive,
+      });
+
   @override
   List<Object?> get props => [myString, myDouble, myInt, myBool];
 }
 
-void main() {
-  registerType<TestObject>(TestObject.new, TestObject.nonPrimitiveMembers);
-  registerType<TestObject2>(TestObject2.new, TestObject2.nonPrimitiveMembers);
+final class NestedObject extends Equatable {
+  final TestObject testObject;
+  final TestObject2 testObject2;
 
+  const NestedObject({
+    required this.testObject,
+    required this.testObject2,
+  }) : super();
+
+  factory NestedObject.fromJson(Map<String, dynamic> json) =>
+      parse(NestedObject.new, json, {
+        'testObject': TestObject.fromJson.required,
+        'testObject2': TestObject2.fromJson.required,
+      });
+
+  @override
+  List<Object?> get props => [testObject, testObject2];
+}
+
+void main() {
   test(
     'Simple deserialization test',
     () {
@@ -71,8 +99,8 @@ void main() {
         'myBool': true,
       };
 
-      expect(parse<TestObject>(objectJson1), object1);
-      expect(parse<TestObject>(objectJson2), object2);
+      expect(TestObject.fromJson(objectJson1), object1);
+      expect(TestObject.fromJson(objectJson2), object2);
     },
   );
 
@@ -107,8 +135,39 @@ void main() {
         'notMyBool': true,
       };
 
-      expect(parse<TestObject2>(objectJson1), object1);
-      expect(parse<TestObject2>(objectJson2), object2);
+      expect(TestObject2.fromJson(objectJson1), object1);
+      expect(TestObject2.fromJson(objectJson2), object2);
+    },
+  );
+
+  test(
+    'Nested object deserialization test',
+    () {
+      final object1 = TestObject(
+          myString: 'testStr', myDouble: 12.5, myInt: 10, myBool: false);
+      final object2 = TestObject2(
+          notMyString: 'testStr2',
+          notMyDouble: 102.5,
+          notMyInt: -5,
+          notMyBool: true);
+      final nestedObject =
+          NestedObject(testObject: object1, testObject2: object2);
+      final nestedObjectJson = {
+        'testObject': {
+          'myString': 'testStr',
+          'myDouble': 12.5,
+          'myInt': 10,
+          'myBool': false,
+        },
+        'testObject2': {
+          'notMyString': 'testStr2',
+          'notMyDouble': 102.5,
+          'notMyInt': -5,
+          'notMyBool': true,
+        },
+      };
+
+      expect(NestedObject.fromJson(nestedObjectJson), nestedObject);
     },
   );
 }
