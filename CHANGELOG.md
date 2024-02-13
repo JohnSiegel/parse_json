@@ -1,5 +1,9 @@
 # Changelog
 
+# 2.2.1
+
+Changed types for ListProperty.function and MapProperty.function to make this usable as parsers on their own. 
+
 # 2.2.0
 
 Added support for default values using `.withDefault`
