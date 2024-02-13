@@ -7,13 +7,8 @@ import '../parse_json.dart';
 /// [json] The JSON object to parse.
 dynamic _parseInternal(
   ParseData parseData,
-  dynamic json,
+  Map<String, dynamic> json,
 ) {
-  if (json is! Map<String, dynamic>) {
-    throw Exception(
-        'Value is not a Map<String, dynamic>, got ${json.runtimeType} instead. '
-        'Value: $json');
-  }
   switch (parseData) {
     case DefinedType(constructor: final constructor, keys: final keys):
       try {
@@ -121,7 +116,7 @@ dynamic _parseInternal(
 /// should have a corresponding namedParameter in [constructor].
 T parse<T>(
   Function constructor,
-  dynamic json,
+  Map<String, dynamic> json,
   Map<String, JsonProperty<dynamic>> properties,
 ) =>
     _parseInternal(DefinedType(constructor, properties), json) as T;
@@ -138,7 +133,7 @@ T parse<T>(
 /// [baseDefinition] An optional base definition for the polymorphic type.
 T polymorphicParse<T>(
   String key,
-  dynamic json,
+  Map<String, dynamic> json,
   Map<String, T Function(Map<String, dynamic> json)> derivedTypes, {
   DefinedType? baseDefinition,
 }) =>
