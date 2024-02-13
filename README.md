@@ -102,7 +102,7 @@ final class ExampleObject {
   /// Factory function for parsing and constructing from JSON
   factory ExampleObject.fromJson(Map<String, dynamic> json) => 
     parse(
-      ExampleObject.new,
+      ExampleObject.json, // the constructor to use
       json,
       {
         'myString': primitive,

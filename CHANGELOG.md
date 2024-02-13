@@ -1,5 +1,9 @@
 # Changelog
 
+# 2.0.1
+
+Fixed documentation mistake
+
 # 2.0.0
 
 - Removed need for registering types
