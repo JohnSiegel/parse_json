@@ -1,13 +1,13 @@
-import 'property.dart';
+part of '../parse_json.dart';
 
 /// Information used to parse a JSON object.
-sealed class ParseData {
-  /// Constructs a constant [ParseData].
-  const ParseData() : super();
+sealed class _ParseData {
+  /// Constructs a constant [_ParseData].
+  const _ParseData() : super();
 }
 
 /// Information used to parse a JSON object with a defined type.
-final class DefinedType extends ParseData {
+final class DefinedType extends _ParseData {
   /// A constructor that takes a json data and returns a Dart object.
   final Function constructor;
 
@@ -27,7 +27,7 @@ final class DefinedType extends ParseData {
 
 /// Information used to parse a JSON object with a polymorphic type, and an
 /// optional definition for a base type.
-final class Polymorphic<T> extends ParseData {
+final class _Polymorphic<T> extends _ParseData {
   /// The key in the JSON object that determines the type.
   final String key;
 
@@ -44,6 +44,6 @@ final class Polymorphic<T> extends ParseData {
   /// [derivedTypes] A map of type ids to constructors.
   ///
   /// [baseDefinition] An optional base definition for the polymorphic type.
-  const Polymorphic(this.key, this.derivedTypes, [this.baseDefinition])
+  const _Polymorphic(this.key, this.derivedTypes, [this.baseDefinition])
       : super();
 }

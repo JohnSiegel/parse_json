@@ -492,9 +492,9 @@ void main() {
               'Invalid properties used for constructor. Trying to call '
                   'constructor Closure: ({required int myInt, required String '
                   "myString}) => InvalidClass from Function 'InvalidClass.': "
-                  "static. with properties {notMyInt: Instance of 'Primitive<i"
-                  "nt>', notMyString: Instance of 'Primitive<String>'}. Error: "
-                  'NoSuchMethodError: Closure call with mismatched arguments: '
+                  "static. with properties {notMyInt: Instance of '_Primitive<i"
+                  "nt>', notMyString: Instance of '_Primitive<String>'}. Error:"
+                  ' NoSuchMethodError: Closure call with mismatched arguments: '
                   "function 'InvalidClass.InvalidClass'\nReceiver: Closure: ({"
                   'required int myInt, required String myString}) => '
                   "InvalidClass from Function 'InvalidClass.': static.\nTried "

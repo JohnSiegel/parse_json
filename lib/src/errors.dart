@@ -1,4 +1,4 @@
-import '../parse_json.dart';
+part of '../parse_json.dart';
 
 /// Indicates that a required property is missing in the JSON object.
 final class PropertyMissingError extends Error {

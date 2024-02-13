@@ -1,3 +1,5 @@
+part of '../parse_json.dart';
+
 /// A property that can be parsed from JSON.
 sealed class JsonProperty<T> {
   /// The type of the property.
@@ -23,7 +25,7 @@ sealed class JsonProperty<T> {
 }
 
 /// A property that is represented the same way in JSON as it is in Dart.
-final class Primitive<T> extends JsonProperty<T> {
+final class _Primitive<T> extends JsonProperty<T> {
   T fromJson(dynamic json) => json as T;
 
   /// Wraps the [fromJson] function in a [ListType]. This is used to indicate a
@@ -41,25 +43,25 @@ final class Primitive<T> extends JsonProperty<T> {
   @override
   OptionalType<T> get optional => OptionalType(fromJson);
 
-  /// Constructs a constant [Primitive].
-  const Primitive() : super();
+  /// Constructs a constant [_Primitive].
+  const _Primitive() : super();
 }
 
 /// For string properties.
-const string = Primitive<String>();
+const string = _Primitive<String>();
 
 /// For int properties.
-const integer = Primitive<int>();
+const integer = _Primitive<int>();
 
 /// For double properties.
-const float = Primitive<double>();
+const float = _Primitive<double>();
 
 /// For bool properties.
-const boolean = Primitive<bool>();
+const boolean = _Primitive<bool>();
 
 /// A property that's type is defined by the user, or that is a collection of
 /// user defined types.
-sealed class UserDefined<T> extends JsonProperty<T> {
+sealed class _UserDefined<T> extends JsonProperty<T> {
   /// A constructor that takes a json data and returns a Dart object.
   Function get function;
 
@@ -78,11 +80,11 @@ sealed class UserDefined<T> extends JsonProperty<T> {
   @override
   MapType<K, T> map<K>() => MapType(function);
 
-  /// Constructs a constant [UserDefined].
-  const UserDefined() : super();
+  /// Constructs a constant [_UserDefined].
+  const _UserDefined() : super();
 }
 
-/// Convenience extension for creating [UserDefined] properties from
+/// Convenience extension for creating [_UserDefined] properties from
 /// constructors.
 extension UserDefinedTypes<T> on T Function(Map<String, dynamic> json) {
   /// Wraps a constructor in a [RequiredType]. This is really just a
@@ -111,7 +113,7 @@ extension UserDefinedTypes<T> on T Function(Map<String, dynamic> json) {
 }
 
 /// A user-defined property that is required to be present in the JSON.
-final class RequiredType<T> extends UserDefined<T> {
+final class RequiredType<T> extends _UserDefined<T> {
   /// A function that takes a json data and returns a Dart object.
   @override
   final Function function;
@@ -121,7 +123,7 @@ final class RequiredType<T> extends UserDefined<T> {
 }
 
 /// A user-defined property that is optional in the JSON.
-final class OptionalType<T> extends UserDefined<T?> {
+final class OptionalType<T> extends _UserDefined<T?> {
   /// A function that takes a json data and returns a Dart object.
   final Function _function;
 
@@ -135,7 +137,7 @@ final class OptionalType<T> extends UserDefined<T?> {
 }
 
 /// A user-defined property that is a list of user-defined types.
-final class ListType<T> extends UserDefined<List<T>> {
+final class ListType<T> extends _UserDefined<List<T>> {
   /// A function that takes a json data and returns a Dart object.
   final Function _function;
 
@@ -152,7 +154,7 @@ final class ListType<T> extends UserDefined<List<T>> {
 }
 
 /// A user-defined property that is a map of user-defined types.
-final class MapType<K, T> extends UserDefined<Map<K, T>> {
+final class MapType<K, T> extends _UserDefined<Map<K, T>> {
   /// A function that takes a json data and returns a Dart object.
   final Function _function;
 

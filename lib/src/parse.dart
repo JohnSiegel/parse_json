@@ -1,4 +1,4 @@
-import '../parse_json.dart';
+part of '../parse_json.dart';
 
 /// Recursively parses a json object into a Dart object via dynamic invocation.
 ///
@@ -6,7 +6,7 @@ import '../parse_json.dart';
 ///
 /// [json] The JSON object to parse.
 dynamic _parseInternal(
-  ParseData parseData,
+  _ParseData parseData,
   Map<String, dynamic> json,
 ) {
   switch (parseData) {
@@ -51,7 +51,7 @@ dynamic _parseInternal(
               }
 
               switch (definition) {
-                case Primitive():
+                case _Primitive():
                   if (jsonValue != null) {
                     if (jsonValue.runtimeType != definition.type) {
                       invalidType();
@@ -62,7 +62,7 @@ dynamic _parseInternal(
                   }
                 case OptionalType(function: final function):
                   return handleUserDefinedType(function);
-                case UserDefined(function: final function):
+                case _UserDefined(function: final function):
                   if (jsonValue != null) {
                     return handleUserDefinedType(function);
                   } else {
@@ -79,7 +79,7 @@ dynamic _parseInternal(
           properties: keys,
         );
       }
-    case Polymorphic(
+    case _Polymorphic(
         key: final key,
         derivedTypes: final derivedTypes,
         baseDefinition: final baseDefinition
@@ -137,5 +137,4 @@ T polymorphicParse<T>(
   Map<String, T Function(Map<String, dynamic> json)> derivedTypes, {
   DefinedType? baseDefinition,
 }) =>
-    _parseInternal(Polymorphic<T>(key, derivedTypes, baseDefinition), json)
-        as T;
+    _parseInternal(_Polymorphic(key, derivedTypes, baseDefinition), json) as T;

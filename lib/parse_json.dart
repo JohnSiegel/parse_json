@@ -1,4 +1,4 @@
-export 'src/errors.dart';
-export 'src/parse.dart';
-export 'src/parse_data.dart';
-export 'src/property.dart';
+part 'src/errors.dart';
+part 'src/parse_data.dart';
+part 'src/parse.dart';
+part 'src/property.dart';
