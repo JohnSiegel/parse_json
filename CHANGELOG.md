@@ -1,5 +1,9 @@
 # Changelog
 
+# 2.1.2
+
+Improved API reference by privating some internal methods and classes
+
 # 2.1.1
 
 Fixed documentation
