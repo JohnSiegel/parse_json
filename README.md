@@ -164,8 +164,8 @@ final class ComplexExampleObject {
   final List<ExampleObject> friendList;
 
   const ComplexExampleObject({
-    required this.myString,
-    required this.myDouble,
+    required this.myBoolList,
+    required this.myIntList,
     required this.myFriend,
     required this.friendList,
     this.myOptionalFriend,
