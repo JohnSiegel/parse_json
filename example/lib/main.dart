@@ -1,3 +1,4 @@
+import 'defaults.dart';
 import 'enums.dart';
 import 'nested_objects.dart';
 import 'polymorphism.dart';
@@ -14,4 +15,5 @@ void main() {
   nestedObjects();
   polymorphism();
   enums();
+  defaults();
 }

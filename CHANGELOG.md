@@ -1,5 +1,9 @@
 # Changelog
 
+# 2.2.0
+
+Added support for default values using `.withDefault`
+
 # 2.1.3
 
 Improved documentation

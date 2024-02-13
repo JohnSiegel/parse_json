@@ -60,7 +60,8 @@ dynamic _parseInternal(
                   } else {
                     propertyMissing();
                   }
-                case OptionalType(function: final function):
+                case OptionalType(function: final function) ||
+                      DefaultType(function: final function):
                   return handleUserDefinedType(function);
                 case _UserDefined(function: final function):
                   if (jsonValue != null) {
