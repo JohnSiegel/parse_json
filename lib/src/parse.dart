@@ -114,6 +114,14 @@ dynamic _parseInternal(
 ///
 /// [properties] A map of keys to their corresponding [JsonProperty]. Each key
 /// should have a corresponding namedParameter in [constructor].
+///
+/// Throws [PropertyMissingError] if a property is missing in the JSON object.
+///
+/// Throws [InvalidTypeError] if a property has an invalid type in the JSON
+/// object.
+///
+/// Throws [InvalidPropertiesError] if the provided properties map does not
+/// match the provided constructor.
 T parse<T>(
   Function constructor,
   Map<String, dynamic> json,
@@ -131,6 +139,14 @@ T parse<T>(
 /// [derivedTypes] A map of type ids to constructors.
 ///
 /// [baseDefinition] An optional base definition for the polymorphic type.
+///
+/// Throws [PropertyMissingError] if a property is missing in the JSON object.
+///
+/// Throws [InvalidTypeError] if a property has an invalid type in the JSON
+/// object.
+///
+/// Throws [InvalidPropertiesError] if the provided properties map does not
+/// match the provided constructor.
 T polymorphicParse<T>(
   String key,
   Map<String, dynamic> json,

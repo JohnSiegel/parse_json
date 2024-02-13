@@ -58,7 +58,8 @@ final class InvalidTypeError extends Error {
   }) : super();
 }
 
-/// Indicates that a property has an invalid value in the JSON object.
+/// Thrown when calling `parse`. Indicates that the provided properties map does
+/// not match the provided constructor.
 final class InvalidPropertiesError extends Error {
   /// The error message.
   final String message;
