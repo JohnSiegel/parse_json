@@ -8,7 +8,11 @@ sealed class ParseData {
 
 /// Information used to parse a JSON object with a defined type.
 final class DefinedType extends ParseData {
+  /// A constructor that takes a json data and returns a Dart object.
   final Function constructor;
+
+  /// A map of keys to their corresponding [JsonProperty]. Each key should have\
+  /// a corresponding namedParameter in [constructor].
   final Map<String, JsonProperty> keys;
 
   /// Constructs a constant [DefinedType].

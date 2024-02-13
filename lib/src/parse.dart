@@ -16,15 +16,14 @@ dynamic _parseInternal(
   }
   switch (parseData) {
     case DefinedType(constructor: final constructor, keys: final keys):
-      return Function.apply(
-          constructor,
-          [],
-          keys.map((key, jsonKey) => MapEntry(
-              Symbol(key),
-              switch (jsonKey) {
-                Primitive() => json[key],
-                UserDefined() => Function.apply(jsonKey.function, [json[key]]),
-              })));
+      return Function.apply(constructor, [], {
+        for (final key in keys.keys)
+          Symbol(key): switch (keys[key]!) {
+            Primitive() => json[key],
+            UserDefined(function: final function) =>
+              Function.apply(function, [json[key]]),
+          }
+      });
     case Polymorphic(
         key: final key,
         derivedTypes: final derivedTypes,

@@ -88,8 +88,8 @@ final class OptionalType<T> extends UserDefined<T?> {
 
   /// Handles the nullability of the input data.
   @override
-  Function get function => (dynamic input) =>
-      input != null ? Function.apply(_function, [input]) : null;
+  Function get function =>
+      (dynamic json) => json != null ? Function.apply(_function, [json]) : null;
 
   /// Constructs a constant [OptionalType].
   const OptionalType(this._function) : super();
@@ -102,12 +102,11 @@ final class ListType<T> extends UserDefined<List<T>> {
 
   /// Maps the input list to a list of Dart objects.
   @override
-  List<T> Function(List<dynamic> input) get function =>
+  List<T> Function(List<dynamic> json) get function =>
       // ignore: avoid_types_on_closure_parameters
-      (final List<dynamic> input) => input
-          .map((element) => Function.apply(_function, [element]))
-          .toList()
-          .cast();
+      (final List<dynamic> json) => [
+            for (final element in json) Function.apply(_function, [element])
+          ].cast();
 
   /// Constructs a constant [ListType].
   const ListType(this._function) : super();
@@ -120,12 +119,12 @@ final class MapType<K, T> extends UserDefined<Map<K, T>> {
 
   /// Maps the input map to a map of Dart objects.
   @override
-  Map<K, T> Function(Map<K, dynamic> input) get function =>
+  Map<K, T> Function(Map<K, dynamic> json) get function =>
       // ignore: avoid_types_on_closure_parameters
-      (final Map<K, dynamic> input) => input
-          .map(
-              (key, value) => MapEntry(key, Function.apply(_function, [value])))
-          .cast();
+      (final Map<K, dynamic> json) => {
+            for (final key in json.keys)
+              key: Function.apply(_function, [json[key]])
+          }.cast();
 
   /// Constructs a constant [MapType].
   const MapType(this._function) : super();

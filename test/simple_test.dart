@@ -77,7 +77,7 @@ final class NestedObject extends Equatable {
 
 void main() {
   test(
-    'Simple deserialization test',
+    'Simple deserialization',
     () {
       final object1 = TestObject(
           myString: 'testStr', myDouble: 12.5, myInt: 10, myBool: false);
@@ -141,7 +141,7 @@ void main() {
   );
 
   test(
-    'Nested object deserialization test',
+    'Nested object deserialization',
     () {
       final object1 = TestObject(
           myString: 'testStr', myDouble: 12.5, myInt: 10, myBool: false);

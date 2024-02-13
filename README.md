@@ -7,7 +7,7 @@ parse_json
 
 ### *NO CODE GENERATION OR REFLECTION*
 
-parse_json uses named parameters from your constructor to match JSON keys. It supports many features such as optionals, nested types, polymorphism/inheritance, and containers. It is also type-safe, meaning that if you try to deserialize a JSON object into a type that doesn't match, it will throw an error.
+parse_json uses named parameters from your constructor to match JSON keys. It supports many features such as optionals, nested types, polymorphism/inheritance, enums, and collections. It is also type-safe, meaning that if you try to deserialize a JSON object into a type that doesn't match, it will throw an error.
 
 ## Getting Started
 
@@ -188,6 +188,7 @@ final class ComplexExampleObject {
 
 * [Primitive types](#primitive-types)
 * [User-defined types](#user-defined-types)
+* [Enums](#enums)
 * [Inheritance/Polymorphic types](#inheritancepolymorphic-types)
 * [Full example](example/lib/main.dart)
 
@@ -282,6 +283,48 @@ final class ComplexObject {
         'optionalExampleObject': SimpleObject.fromJson.optional,
       }
     );
+}
+```
+
+## Enums
+
+Enums are pretty much the same as user-defined types. You need to provide a `fromJson` factory function for the enum. You can use the `switch` function to match the JSON value to the enum value. Here is an example of a class with an enum member:
+
+```dart
+enum ExampleEnum {
+  a,
+  b,
+  c;
+
+  factory ExampleEnum.fromJson(dynamic json) => switch (json) {
+        'abbracaddabra' => ExampleEnum.a,
+        'bye-bye' => ExampleEnum.b,
+        'ciao' => ExampleEnum.c,
+        _ => throw Exception('Unknown enum value')
+      };
+}
+
+final class ObjectWithEnums {
+  final ExampleEnum a;
+  final ExampleEnum? b;
+  final Map<String, List<ExampleEnum>>? c;
+
+  const ObjectWithEnums({
+    required this.a,
+    this.b,
+    this.c,
+  }) : super();
+
+  factory ObjectWithEnums.fromJson(Map<String, dynamic> json) =>
+      parse(
+        ObjectWithEnums.new, 
+        json, 
+        {
+          'a': ExampleEnum.fromJson.required,
+          'b': ExampleEnum.fromJson.optional,
+          'c': ExampleEnum.fromJson.list.stringMap.optional,
+        }
+      );
 }
 ```
 
