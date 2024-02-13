@@ -174,10 +174,11 @@ final class ListType<T> extends _CollectionType<List<T>> {
 
   /// Maps the input list to a list of Dart objects.
   @override
-  List<T> Function(List<dynamic> json) get function =>
+  List<T> Function(dynamic json) get function =>
       // ignore: avoid_types_on_closure_parameters
-      (final List<dynamic> json) => [
-            for (final element in json) Function.apply(_function, [element])
+      (final dynamic json) => [
+            for (final element in json as List)
+              Function.apply(_function, [element])
           ].cast();
 
   /// Constructs a constant [ListType].
@@ -191,10 +192,10 @@ final class MapType<K, T> extends _CollectionType<Map<K, T>> {
 
   /// Maps the input map to a map of Dart objects.
   @override
-  Map<K, T> Function(Map<K, dynamic> json) get function =>
+  Map<K, T> Function(dynamic json) get function =>
       // ignore: avoid_types_on_closure_parameters
-      (final Map<K, dynamic> json) => {
-            for (final key in json.keys)
+      (final dynamic json) => {
+            for (final key in (json as Map<K, dynamic>).keys)
               key: Function.apply(_function, [json[key]])
           }.cast();
 
