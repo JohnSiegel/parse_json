@@ -14,8 +14,8 @@ final class SimpleObject extends Equatable {
 
   factory SimpleObject.fromJson(Map<String, dynamic> json) =>
       parse(SimpleObject.new, json, {
-        'myString': primitive,
-        'myDouble': primitive,
+        'myString': string,
+        'myDouble': float,
       });
 
   @override

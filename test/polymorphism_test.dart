@@ -22,8 +22,8 @@ base class TestPolymorphic extends Equatable {
             TestPolymorphicB.polymorphicId: TestPolymorphicB.fromJson,
           },
           baseDefinition: DefinedType(TestPolymorphic.new, {
-            'myString': primitive,
-            'myDouble': primitive,
+            'myString': string,
+            'myDouble': float,
           }));
 
   @override
@@ -45,10 +45,10 @@ final class TestPolymorphicA extends TestPolymorphic {
 
   factory TestPolymorphicA.fromJson(Map<String, dynamic> json) =>
       parse(TestPolymorphicA.new, json, {
-        'myString': primitive,
-        'myDouble': primitive,
-        'myInt': primitive,
-        'myBool': primitive,
+        'myString': string,
+        'myDouble': float,
+        'myInt': integer,
+        'myBool': boolean,
       });
 
   @override
@@ -57,8 +57,6 @@ final class TestPolymorphicA extends TestPolymorphic {
 
 final class TestPolymorphicB extends TestPolymorphic {
   static const polymorphicId = 'B';
-
-  static const Map<String, Type> nonPrimitiveMembers = {};
 
   final List<int> myIntList;
   final List<bool> myBoolList;
@@ -72,10 +70,10 @@ final class TestPolymorphicB extends TestPolymorphic {
 
   factory TestPolymorphicB.fromJson(Map<String, dynamic> json) =>
       parse(TestPolymorphicB.new, json, {
-        'myString': primitive,
-        'myDouble': primitive,
-        'myIntList': primitive,
-        'myBoolList': primitive,
+        'myString': string,
+        'myDouble': float,
+        'myIntList': integer.list,
+        'myBoolList': boolean.list,
       });
 
   @override

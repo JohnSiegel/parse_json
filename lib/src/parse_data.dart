@@ -13,7 +13,7 @@ final class DefinedType extends ParseData {
 
   /// A map of keys to their corresponding [JsonProperty]. Each key should have\
   /// a corresponding namedParameter in [constructor].
-  final Map<String, JsonProperty> keys;
+  final Map<String, JsonProperty<dynamic>> keys;
 
   /// Constructs a constant [DefinedType].
   ///

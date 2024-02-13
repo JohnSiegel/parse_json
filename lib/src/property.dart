@@ -1,43 +1,82 @@
 /// A property that can be parsed from JSON.
-sealed class JsonProperty {
+sealed class JsonProperty<T> {
+  /// The type of the property.
+  Type get type => T;
+
+  /// Makes a property optional.
+  OptionalType<T> get optional;
+
+  /// Makes a property a list.
+  ListType<T> get list;
+
+  /// Makes a property a map with key type [K].
+  MapType<K, T> map<K>();
+
+  /// Makes a property a map with key type [String].
+  MapType<String, T> get stringMap => map();
+
+  /// Makes a property a map with key type [int].
+  MapType<int, T> get intMap => map();
+
   /// Constructs a constant [JsonProperty].
   const JsonProperty() : super();
 }
 
 /// A property that is represented the same way in JSON as it is in Dart.
-final class Primitive extends JsonProperty {
+final class Primitive<T> extends JsonProperty<T> {
+  T fromJson(dynamic json) => json as T;
+
+  /// Wraps the [fromJson] function in a [ListType]. This is used to indicate a
+  /// property with a primitives type is a list.
+  @override
+  ListType<T> get list => ListType(fromJson);
+
+  /// Wraps the [fromJson] function in a [MapType]. This is used to indicate a
+  /// property with a primitives type is a map with key type [K].
+  @override
+  MapType<K, T> map<K>() => MapType(fromJson);
+
+  /// Wraps the [fromJson] function in an [OptionalType]. This is used to
+  /// indicate a property with a primitives type can be null.
+  @override
+  OptionalType<T> get optional => OptionalType(fromJson);
+
   /// Constructs a constant [Primitive].
   const Primitive() : super();
 }
 
-/// A static constant for simplifying the process of defining a [Primitive].
-const primitive = Primitive();
+/// For string properties.
+const string = Primitive<String>();
+
+/// For int properties.
+const integer = Primitive<int>();
+
+/// For double properties.
+const float = Primitive<double>();
+
+/// For bool properties.
+const boolean = Primitive<bool>();
 
 /// A property that's type is defined by the user, or that is a collection of
 /// user defined types.
-sealed class UserDefined<T> extends JsonProperty {
+sealed class UserDefined<T> extends JsonProperty<T> {
   /// A constructor that takes a json data and returns a Dart object.
   Function get function;
 
   /// Wraps the [function] in an [OptionalType]. This is used to indicate a
   /// property with a user defined type can be null.
+  @override
   OptionalType<T> get optional => OptionalType(function);
 
   /// Wraps the [function] in a [ListType]. This is used to indicate a property
   /// with a user defined type is a list.
+  @override
   ListType<T> get list => ListType(function);
 
   /// Wraps the [function] in a [MapType]. This is used to indicate a property
   /// with a user defined type is a map with key type [K].
+  @override
   MapType<K, T> map<K>() => MapType(function);
-
-  /// Wraps the [function] in a [MapType]. This is used to indicate a property
-  /// with a user defined type is a map with key type [String].
-  MapType<String, T> get stringMap => map();
-
-  /// Wraps the [function] in a [MapType]. This is used to indicate a property
-  /// with a user defined type is a map with key type [int].
-  MapType<int, T> get intMap => map();
 
   /// Constructs a constant [UserDefined].
   const UserDefined() : super();

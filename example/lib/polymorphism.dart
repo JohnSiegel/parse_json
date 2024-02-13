@@ -23,8 +23,8 @@ base class ExamplePolymorphic extends Equatable {
             ExamplePolymorphicB.polymorphicId: ExamplePolymorphicB.fromJson,
           },
           baseDefinition: DefinedType(ExamplePolymorphic.new, {
-            'myString': primitive,
-            'myDouble': primitive,
+            'myString': string,
+            'myDouble': float,
           }));
 
   @override
@@ -46,10 +46,10 @@ final class ExamplePolymorphicA extends ExamplePolymorphic {
 
   factory ExamplePolymorphicA.fromJson(Map<String, dynamic> json) =>
       parse(ExamplePolymorphicA.new, json, {
-        'myString': primitive,
-        'myDouble': primitive,
-        'myInt': primitive,
-        'myBool': primitive,
+        'myString': string,
+        'myDouble': float,
+        'myInt': integer,
+        'myBool': boolean,
       });
 
   @override
@@ -71,10 +71,10 @@ final class ExamplePolymorphicB extends ExamplePolymorphic {
 
   factory ExamplePolymorphicB.fromJson(Map<String, dynamic> json) =>
       parse(ExamplePolymorphicB.new, json, {
-        'myString': primitive,
-        'myDouble': primitive,
-        'stringList': primitive,
-        'doubleList': primitive,
+        'myString': string,
+        'myDouble': float,
+        'stringList': string.list,
+        'doubleList': float.list,
       });
 
   @override

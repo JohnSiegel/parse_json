@@ -17,10 +17,10 @@ final class SimpleOptionals extends Equatable {
 
   factory SimpleOptionals.fromJson(Map<String, dynamic> json) =>
       parse(SimpleOptionals.new, json, {
-        'myString': primitive,
-        'myDouble': primitive,
-        'myInt': primitive,
-        'myBool': primitive,
+        'myString': string,
+        'myDouble': float.optional,
+        'myInt': integer,
+        'myBool': boolean.optional,
       });
 
   @override
@@ -39,7 +39,7 @@ final class ComplexOptionals extends Equatable {
   factory ComplexOptionals.fromJson(Map<String, dynamic> json) =>
       parse(ComplexOptionals.new, json, {
         'optionalObject': SimpleOptionals.fromJson.optional,
-        'optionalBoolList': primitive
+        'optionalBoolList': boolean.list.optional
       });
 
   @override

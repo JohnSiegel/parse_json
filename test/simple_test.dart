@@ -17,10 +17,10 @@ final class TestObject extends Equatable {
 
   factory TestObject.fromJson(Map<String, dynamic> json) =>
       parse(TestObject.new, json, {
-        'myString': primitive,
-        'myDouble': primitive,
-        'myInt': primitive,
-        'myBool': primitive,
+        'myString': string,
+        'myDouble': float,
+        'myInt': integer,
+        'myBool': boolean,
       });
 
   @override
@@ -46,10 +46,10 @@ final class TestObject2 extends Equatable {
 
   factory TestObject2.fromJson(Map<String, dynamic> json) =>
       parse(TestObject2.new, json, {
-        'notMyString': primitive,
-        'notMyDouble': primitive,
-        'notMyInt': primitive,
-        'notMyBool': primitive,
+        'notMyString': string,
+        'notMyDouble': float,
+        'notMyInt': integer,
+        'notMyBool': boolean,
       });
 
   @override

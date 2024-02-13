@@ -17,10 +17,10 @@ final class SimpleLists extends Equatable {
 
   factory SimpleLists.fromJson(Map<String, dynamic> json) =>
       parse(SimpleLists.new, json, {
-        'myStringList': primitive,
-        'myOptionalDoubleList': primitive,
-        'myIntList': primitive,
-        'myBoolList': primitive,
+        'myStringList': string.list,
+        'myOptionalDoubleList': float.list.optional,
+        'myIntList': integer.list,
+        'myBoolList': boolean.list,
       });
 
   @override
@@ -62,10 +62,10 @@ final class SimpleMaps extends Equatable {
 
   factory SimpleMaps.fromJson(Map<String, dynamic> json) =>
       parse(SimpleMaps.new, json, {
-        'myStringMap': primitive,
-        'myOptionalDoubleMap': primitive,
-        'myIntMap': primitive,
-        'myBoolMap': primitive,
+        'myStringMap': string.stringMap,
+        'myOptionalDoubleMap': float.stringMap.optional,
+        'myIntMap': integer.stringMap,
+        'myBoolMap': boolean.stringMap,
       });
 
   @override
@@ -102,7 +102,7 @@ final class DeeplyNestedPrimitiveCollection extends Equatable {
 
   factory DeeplyNestedPrimitiveCollection.fromJson(Map<String, dynamic> json) =>
       parse(DeeplyNestedPrimitiveCollection.new, json, {
-        'deepList': primitive,
+        'deepList': integer.list.list.list.list.list.list.list.list.list.list,
       });
 
   @override

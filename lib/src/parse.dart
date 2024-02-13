@@ -16,14 +16,74 @@ dynamic _parseInternal(
   }
   switch (parseData) {
     case DefinedType(constructor: final constructor, keys: final keys):
-      return Function.apply(constructor, [], {
-        for (final key in keys.keys)
-          Symbol(key): switch (keys[key]!) {
-            Primitive() => json[key],
-            UserDefined(function: final function) =>
-              Function.apply(function, [json[key]]),
-          }
-      });
+      try {
+        return Function.apply(constructor, [], {
+          for (final key in keys.keys)
+            Symbol(key): () {
+              final definition = keys[key]!;
+
+              void propertyMissing() => throw PropertyMissingError(
+                    json: json,
+                    constructor: parseData.constructor,
+                    message:
+                        'Property missing in json. Constructor: $constructor. '
+                        'Missing property: $key. Missing property type: '
+                        '${definition.type}',
+                    missingPropertyName: key,
+                    missingPropertyType: definition.type,
+                  );
+
+              final jsonValue = json[key];
+
+              void invalidType() => throw InvalidTypeError(
+                    actualType: jsonValue.runtimeType,
+                    constructor: parseData.constructor,
+                    expectedType: definition.type,
+                    json: json,
+                    message:
+                        'Type mismatch in json. Constructor: $constructor. '
+                        'Property: $key. Expected type: ${definition.type}. '
+                        'Actual type: ${jsonValue.runtimeType}.',
+                    propertyName: key,
+                  );
+
+              dynamic handleUserDefinedType(Function function) {
+                try {
+                  return Function.apply(function, [jsonValue]);
+                } on TypeError catch (_) {
+                  invalidType();
+                }
+              }
+
+              switch (definition) {
+                case Primitive():
+                  if (jsonValue != null) {
+                    if (jsonValue.runtimeType != definition.type) {
+                      invalidType();
+                    }
+                    return jsonValue;
+                  } else {
+                    propertyMissing();
+                  }
+                case OptionalType(function: final function):
+                  return handleUserDefinedType(function);
+                case UserDefined(function: final function):
+                  if (jsonValue != null) {
+                    return handleUserDefinedType(function);
+                  } else {
+                    propertyMissing();
+                  }
+              }
+            }()
+        });
+      } on NoSuchMethodError catch (e) {
+        throw InvalidPropertiesError(
+          constructor: parseData.constructor,
+          message: 'Invalid properties used for constructor. Trying to call '
+              'constructor $constructor with properties $keys. Error: $e',
+          properties: keys,
+        );
+      }
     case Polymorphic(
         key: final key,
         derivedTypes: final derivedTypes,
@@ -58,10 +118,11 @@ dynamic _parseInternal(
 /// [json] The JSON object to parse.
 ///
 /// [properties] A map of keys to their corresponding [JsonProperty]. Each key
+/// should have a corresponding namedParameter in [constructor].
 T parse<T>(
   Function constructor,
   dynamic json,
-  Map<String, JsonProperty> properties,
+  Map<String, JsonProperty<dynamic>> properties,
 ) =>
     _parseInternal(DefinedType(constructor, properties), json) as T;
 

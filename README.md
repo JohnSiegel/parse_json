@@ -28,7 +28,7 @@ Then import the package in your Dart code:
 import 'package:parse_json/parse_json.dart';
 ```
 
-Then match up a constructor's named parameters with your JSON data, and make a factory function that uses `parse` to create an object from JSON. Here is an example of a simple class with primitive members:
+Then match up a constructor's named parameters with your JSON data, and make a factory function that uses `parse` to create an object from JSON. In the `parse` function, you will need to provide the constructor to use, the JSON data, and a map that matches the named parameters of the constructor to the JSON keys. Here is an example of a simple class with primitive members:
 
 Data:
 ```json
@@ -59,14 +59,16 @@ final class ExampleObject {
       json,
       // note: the keys in this map MUST match the named parameters of the constructor
       {
-        'myString': primitive, // strings are primitive, so you just put primitive here
-        'myDouble': primitive, // doubles are primitive, so you just put primitive here
+        'myString': string,
+        'myDouble': float,
       },
     );
 }
 ```
 
-Note that you do not need to name your member variables the same as the JSON keys. You can specify a special constructor with named parameters that match the JSON keys, and use whatever names you like for your member variables. You also do not need to parse every member variable from JSON, in cases where you have derived data. Your members can also be non-final, but most of the examples in this documentation use final members for consistency.
+For strings, you will use `string`, for doubles you will use `float`, for ints you will use `integer`, and for bools you will use `boolean`.
+
+You do not need to name your member variables the same as the JSON keys. You can specify a special constructor with named parameters that match the JSON keys, and use whatever names you like for your member variables. You also do not need to parse every member variable from JSON, in cases where you have derived data. Your members can also be non-final, but most of the examples in this documentation use final members for consistency.
 
 Data:
 ```json
@@ -105,14 +107,14 @@ final class ExampleObject {
       ExampleObject.json, // the constructor to use
       json,
       {
-        'myString': primitive,
-        'myDouble': primitive,
+        'myString': string,
+        'myDouble': float,
       },
     );
 }
 ```
 
-At this point you have used `primitive` for all of your keys. You will need to add more details to the map parameter in `parse` when you have a JSON property that is non-primitive (Ones that are not `String`, `int`, `double`, `bool`, or some `List` or `Map` of those). Here is an example of a class with non-primitive members:
+You will need to create the map parameter in `parse` a little differently when you have a JSON property that is user-defined (Ones that are not `String`, `int`, `double`, `bool`, or some `List` or `Map` of those). Here is an example of a class with user-defined members:
 
 Data:
 ```json
@@ -148,8 +150,8 @@ final class ExampleObject {
       ExampleObject.new,
       json,
       {
-        'myString': primitive,
-        'myDouble': primitive,
+        'myString': string,
+        'myDouble': float,
       },
     );
 }
@@ -174,8 +176,8 @@ final class ComplexExampleObject {
       ComplexExampleObject.new,
       json,
       {
-        'myBoolList': primitive,
-        'myIntList': primitive,
+        'myBoolList': boolean.list,
+        'myIntList': integer.list,
         'myFriend': ExampleObject.fromJson.required,
         'myOptionalFriend': ExampleObject.fromJson.optional,
         'friendList': ExampleObject.fromJson.list,
@@ -189,12 +191,13 @@ final class ComplexExampleObject {
 * [Primitive types](#primitive-types)
 * [User-defined types](#user-defined-types)
 * [Enums](#enums)
+* [Collections](#collections)
 * [Inheritance/Polymorphic types](#inheritancepolymorphic-types)
 * [Full example](example/lib/main.dart)
 
 ## Primitive types:
 
-If your defining a primitive property (such as `String`, `int`, `double`, `bool`, or some `List` or `Map` of one of those), you can use the `primitive` constant for your property. Here is an example of a simple class that only has primitive members:
+If you're defining a primitive property (such as `String`, `int`, `double`, `bool`, or some `List` or `Map` of one of those), you can use the a constant for your property. Here is an example of a simple class that only has primitive members:
 
 ```dart
 import 'package:parse_json/parse_json.dart';
@@ -221,12 +224,12 @@ final class ExampleObject {
       ExampleObject.new,
       json,
       {
-        'myString': primitive,
-        'myDouble': primitive,
-        'myInt': primitive,
-        'myBool': primitive,
-        'myOptionalString': primitive,
-        'myOptionalInt': primitive,
+        'myString': string,
+        'myDouble': float,
+        'myInt': integer,
+        'myBool': boolean,
+        'myOptionalString': string.optional,
+        'myOptionalInt': integer.optional,
       }
     );
 }
@@ -253,8 +256,8 @@ final class SimpleObject {
       SimpleObject.new,
       json,
       {
-        'myString': primitive,
-        'myDouble': primitive,
+        'myString': string,
+        'myDouble': float,
       }
     );
 }
@@ -328,9 +331,37 @@ final class ObjectWithEnums {
 }
 ```
 
+## Collections
+
+For collections, you can use the `.list`, `.map`, `.stringMap`, or `.intMap` methods on any JsonProperty. Here is an example of a class with a list and a map:
+
+```dart
+import 'package:parse_json/parse_json.dart';
+
+final class ExampleObject {
+  final List<String> myStringList;
+  final Map<String, double> myStringDoubleMap;
+
+  const ExampleObject({
+    required this.myStringList,
+    required this.myStringDoubleMap,
+  });
+
+  factory ExampleObject.fromJson(Map<String, dynamic> json) => 
+    parse(
+      ExampleObject.new,
+      json,
+      {
+        'myStringList': string.list,
+        'myStringDoubleMap': float.stringMap,
+      }
+    );
+}
+```
+
 ## Inheritance/Polymorphic types:
 
-With polymorphic base types, you need to use `polymorphicParse`. You will need to provide a `polymorphicKey` and a `polymorphicId` for each subclass. The `polymorphicKey` is the key in the JSON that will be used to determine the type of the object. The `polymorphicId` is the value of the `polymorphicKey` that will be used to determine the type of the object. You must provide the `fromJson` factory functions to the `derivedTypes` parameter of `polymorphicParse`, and use the `polymorphicId` of each subclass as the key in the map. You can also provide a `baseDefinition` to the `polymorphicParse` function that will be used to parse the base class if it is not abstract and `polymorphicKey` is missing from the JSON.
+With polymorphic base types, you need to use `polymorphicParse`. You will need to provide a `polymorphicKey` for the base class and a unique id for each subclass. The `polymorphicKey` is the key in the JSON that will be used to determine the type of the object. The unique ids are the values of `polymorphicKey` that will be used to determine the type of an object polymorphically at runtime. You must provide the `fromJson` factory functions to the `derivedTypes` parameter of `polymorphicParse`, and use a unique id for each subclass as the key in the map. You can also provide a `baseDefinition` to the `polymorphicParse` function that will be used to parse the base class if it is not abstract and `polymorphicKey` is missing from the JSON.
 
 ```dart
 import 'package:parse_json/parse_json.dart';
@@ -355,8 +386,8 @@ final class BaseClass {
         SubClassB.polymorphicId: SubClassB.fromJson,
       },
       baseDefinition: DefinedType(BaseClass.new, {
-        'myString': primitive,
-        'myDouble': primitive,
+        'myString': string,
+        'myDouble': float,
     }));
 }
 
@@ -376,9 +407,9 @@ final class SubClassA extends BaseClass {
       SubClassA.new,
       json,
       {
-        'myString': primitive,
-        'myDouble': primitive,
-        'myInt': primitive,
+        'myString': string,
+        'myDouble': float,
+        'myInt': integer,
       },
     );
 }
@@ -399,8 +430,8 @@ final class SubClassB extends BaseClass {
       SubClassB.fromJson,
       json,
       {
-        'myString': primitive,
-        'myDouble': primitive,
+        'myString': string,
+        'myDouble': float,
         'myExampleObject': ExampleObject.fromJson.required,
       },
     );

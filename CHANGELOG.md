@@ -1,5 +1,10 @@
 # Changelog
 
+# 2.1.0
+
+- Added support for parsing enums
+- Improved error handling
+
 # 2.0.1
 
 Fixed documentation mistake

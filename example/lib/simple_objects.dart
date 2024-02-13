@@ -22,23 +22,17 @@ final class ExampleObject extends Equatable {
 
   factory ExampleObject.fromJson(Map<String, dynamic> json) =>
       parse(ExampleObject.new, json, {
-        'myString': primitive,
-        'myDouble': primitive,
-        'myInt': primitive,
-        'myBool': primitive,
-        'myOptionalString': primitive,
-        'myOptionalInt': primitive,
+        'myString': string,
+        'myDouble': float,
+        'myInt': integer,
+        'myBool': boolean,
+        'myOptionalString': string.optional,
+        'myOptionalInt': integer.optional,
       });
 
   @override
-  List<Object?> get props => [
-        myString,
-        myDouble,
-        myInt,
-        myBool,
-        myOptionalString,
-        myOptionalInt,
-      ];
+  List<Object?> get props =>
+      [myString, myDouble, myInt, myBool, myOptionalString, myOptionalInt];
 }
 
 void simpleObjects() {
