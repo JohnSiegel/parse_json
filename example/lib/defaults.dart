@@ -16,7 +16,7 @@ final class SimpleDefaults extends Equatable {
     required this.myBool,
   }) : super();
 
-  factory SimpleDefaults.fromJson(Map<String, dynamic> json) =>
+  factory SimpleDefaults.fromJson(dynamic json) =>
       parse(SimpleDefaults.new, json, {
         'myString': string,
         'myDouble': float.withDefault(12.5),
@@ -37,7 +37,7 @@ final class ComplexDefaults extends Equatable {
     required this.boolList,
   }) : super();
 
-  factory ComplexDefaults.fromJson(Map<String, dynamic> json) =>
+  factory ComplexDefaults.fromJson(dynamic json) =>
       parse(ComplexDefaults.new, json, {
         'object': SimpleDefaults.fromJson.withDefault(
           SimpleDefaults(

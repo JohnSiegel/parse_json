@@ -13,18 +13,17 @@ base class TestPolymorphic extends Equatable {
     required this.myDouble,
   }) : super();
 
-  factory TestPolymorphic.fromJson(Map<String, dynamic> json) =>
-      polymorphicParse(
-          polymorphicKey,
-          json,
-          {
-            TestPolymorphicA.polymorphicId: TestPolymorphicA.fromJson,
-            TestPolymorphicB.polymorphicId: TestPolymorphicB.fromJson,
-          },
-          baseDefinition: DefinedType(TestPolymorphic.new, {
-            'myString': string,
-            'myDouble': float,
-          }));
+  factory TestPolymorphic.fromJson(dynamic json) => polymorphicParse(
+      polymorphicKey,
+      json,
+      {
+        TestPolymorphicA.polymorphicId: TestPolymorphicA.fromJson,
+        TestPolymorphicB.polymorphicId: TestPolymorphicB.fromJson,
+      },
+      baseDefinition: DefinedType(TestPolymorphic.new, {
+        'myString': string,
+        'myDouble': float,
+      }));
 
   @override
   List<Object?> get props => [myString, myDouble];
@@ -43,7 +42,7 @@ final class TestPolymorphicA extends TestPolymorphic {
     required this.myBool,
   }) : super();
 
-  factory TestPolymorphicA.fromJson(Map<String, dynamic> json) =>
+  factory TestPolymorphicA.fromJson(dynamic json) =>
       parse(TestPolymorphicA.new, json, {
         'myString': string,
         'myDouble': float,
@@ -68,7 +67,7 @@ final class TestPolymorphicB extends TestPolymorphic {
     required this.myBoolList,
   }) : super();
 
-  factory TestPolymorphicB.fromJson(Map<String, dynamic> json) =>
+  factory TestPolymorphicB.fromJson(dynamic json) =>
       parse(TestPolymorphicB.new, json, {
         'myString': string,
         'myDouble': float,

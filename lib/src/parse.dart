@@ -5,10 +5,7 @@ part of '../parse_json.dart';
 /// [parseData] The information used to parse the JSON object.
 ///
 /// [json] The JSON object to parse.
-dynamic _parseInternal(
-  _ParseData parseData,
-  Map<String, dynamic> json,
-) {
+dynamic _parseInternal(_ParseData parseData, Map<String, dynamic> json) {
   switch (parseData) {
     case DefinedType(constructor: final constructor, keys: final keys):
       try {
@@ -20,10 +17,6 @@ dynamic _parseInternal(
               void propertyMissing() => throw PropertyMissingError(
                     json: json,
                     constructor: parseData.constructor,
-                    message:
-                        'Property missing in json. Constructor: $constructor. '
-                        'Missing property: $key. Missing property type: '
-                        '${definition.type}',
                     missingPropertyName: key,
                     missingPropertyType: definition.type,
                   );
@@ -35,10 +28,6 @@ dynamic _parseInternal(
                     constructor: parseData.constructor,
                     expectedType: definition.type,
                     json: json,
-                    message:
-                        'Type mismatch in json. Constructor: $constructor. '
-                        'Property: $key. Expected type: ${definition.type}. '
-                        'Actual type: ${jsonValue.runtimeType}.',
                     propertyName: key,
                   );
 
@@ -47,6 +36,25 @@ dynamic _parseInternal(
                   return Function.apply(function, [jsonValue]);
                 } on TypeError catch (_) {
                   invalidType();
+                } on InvalidTypeError catch (invalidTypeError) {
+                  throw InvalidTypeError(
+                    actualType: invalidTypeError.actualType,
+                    constructor: parseData.constructor,
+                    expectedType: invalidTypeError.expectedType,
+                    json: json,
+                    propertyName: '$key${invalidTypeError.propertyName != '' ?
+                        // Append previous property name if it exists
+                        '.${invalidTypeError.propertyName}' : ''}',
+                  );
+                } on PropertyMissingError catch (propertyMissingError) {
+                  throw PropertyMissingError(
+                    constructor: parseData.constructor,
+                    json: json,
+                    missingPropertyName:
+                        '$key.${propertyMissingError.missingPropertyName}',
+                    missingPropertyType:
+                        propertyMissingError.missingPropertyType,
+                  );
                 }
               }
 
@@ -72,11 +80,9 @@ dynamic _parseInternal(
               }
             }()
         });
-      } on NoSuchMethodError catch (e) {
+      } on NoSuchMethodError catch (_) {
         throw InvalidPropertiesError(
           constructor: parseData.constructor,
-          message: 'Invalid properties used for constructor. Trying to call '
-              'constructor $constructor with properties $keys. Error: $e',
           properties: keys,
         );
       }
@@ -106,6 +112,26 @@ dynamic _parseInternal(
   }
 }
 
+/// Throws an [InvalidTypeError] if [json] is not of type a
+/// [Map<String, dynamic>].
+Map<String, dynamic> _checkJsonType(
+  dynamic json,
+  Function? constructor,
+  Type T,
+) {
+  if (json is! Map<String, dynamic>) {
+    throw InvalidTypeError(
+      actualType: json.runtimeType,
+      constructor: constructor,
+      expectedType: T,
+      json: json,
+      propertyName: '',
+    );
+  } else {
+    return json;
+  }
+}
+
 /// Parses a json object into a Dart object via dynamic invocation.
 ///
 /// [constructor] A constructor that takes a json data and returns a Dart
@@ -125,10 +151,11 @@ dynamic _parseInternal(
 /// match the provided constructor.
 T parse<T>(
   Function constructor,
-  Map<String, dynamic> json,
+  dynamic json,
   Map<String, JsonProperty<dynamic>> properties,
 ) =>
-    _parseInternal(DefinedType(constructor, properties), json) as T;
+    _parseInternal(DefinedType(constructor, properties),
+        _checkJsonType(json, constructor, T)) as T;
 
 /// Parses a json object into a Dart object via dynamic invocation. This will
 /// also call the correct constructor based on the json value at [key].
@@ -150,8 +177,9 @@ T parse<T>(
 /// match the provided constructor.
 T polymorphicParse<T>(
   String key,
-  Map<String, dynamic> json,
-  Map<String, T Function(Map<String, dynamic> json)> derivedTypes, {
+  dynamic json,
+  Map<String, T Function(dynamic json)> derivedTypes, {
   DefinedType? baseDefinition,
 }) =>
-    _parseInternal(_Polymorphic(key, derivedTypes, baseDefinition), json) as T;
+    _parseInternal(_Polymorphic(key, derivedTypes, baseDefinition),
+        _checkJsonType(json, null, T)) as T;

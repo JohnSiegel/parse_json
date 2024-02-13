@@ -1,5 +1,9 @@
 # Changelog
 
+# 2.2.2
+
+Improved error handling, documentation, and made the parser use `dynamic` instead of `Map<String, dynamic>` for the JSON object.
+
 # 2.2.1
 
 Changed types for ListProperty.function and MapProperty.function to make this usable as parsers on their own. 

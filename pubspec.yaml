@@ -1,6 +1,6 @@
 name: parse_json
 description: Type safe and simple JSON deserialization for Dart with no code generation or reflection.
-version: 2.2.1
+version: 2.2.2
 repository: https://github.com/JohnSiegel/parse_json
 issue_tracker: https://github.com/JohnSiegel/parse_json/issues
 

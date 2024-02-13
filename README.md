@@ -53,7 +53,7 @@ final class ExampleObject {
   });
 
   /// This is the factory function that will be used to parse the JSON
-  factory ExampleObject.fromJson(Map<String, dynamic> json) => 
+  factory ExampleObject.fromJson(dynamic json) => 
     parse(
       ExampleObject.new, // the constructor to use
       json,
@@ -102,7 +102,7 @@ final class ExampleObject {
   const ExampleObject(this.name, this.originalHeight, this.currentHeight);
 
   /// Factory function for parsing and constructing from JSON
-  factory ExampleObject.fromJson(Map<String, dynamic> json) => 
+  factory ExampleObject.fromJson(dynamic json) => 
     parse(
       ExampleObject.json, // the constructor to use
       json,
@@ -145,7 +145,7 @@ final class ExampleObject {
     required this.myDouble,
   });
 
-  factory ExampleObject.fromJson(Map<String, dynamic> json) => 
+  factory ExampleObject.fromJson(dynamic json) => 
     parse(
       ExampleObject.new,
       json,
@@ -171,7 +171,7 @@ final class ComplexExampleObject {
     this.myOptionalFriend,
   });
 
-  factory ComplexExampleObject.fromJson(Map<String, dynamic> json) => 
+  factory ComplexExampleObject.fromJson(dynamic json) => 
     parse(
       ComplexExampleObject.new,
       json,
@@ -220,7 +220,7 @@ final class ExampleObject {
     this.myOptionalInt,
   });
 
-  factory ExampleObject.fromJson(Map<String, dynamic> json) => 
+  factory ExampleObject.fromJson(dynamic json) => 
     parse(
       ExampleObject.new,
       json,
@@ -252,7 +252,7 @@ final class SimpleObject {
     required this.myDouble,
   });
 
-  factory SimpleObject.fromJson(Map<String, dynamic> json) => 
+  factory SimpleObject.fromJson(dynamic json) => 
     parse(
       SimpleObject.new,
       json,
@@ -276,7 +276,7 @@ final class ComplexObject {
     this.optionalExampleObject,
   });
 
-  factory ComplexObject.fromJson(Map<String, dynamic> json) => 
+  factory ComplexObject.fromJson(dynamic json) => 
     parse(
       ComplexObject.new,
       json,
@@ -319,7 +319,7 @@ final class ObjectWithEnums {
     this.c,
   }) : super();
 
-  factory ObjectWithEnums.fromJson(Map<String, dynamic> json) =>
+  factory ObjectWithEnums.fromJson(dynamic json) =>
       parse(
         ObjectWithEnums.new, 
         json, 
@@ -350,7 +350,7 @@ final class SimpleDefaults {
     required this.myBool,
   }) : super();
 
-  factory SimpleDefaults.fromJson(Map<String, dynamic> json) =>
+  factory SimpleDefaults.fromJson(dynamic json) =>
     parse(
       SimpleDefaults.new, 
       json, 
@@ -372,7 +372,7 @@ final class ComplexDefaults {
     required this.boolList,
   }) : super();
 
-  factory ComplexDefaults.fromJson(Map<String, dynamic> json) =>
+  factory ComplexDefaults.fromJson(dynamic json) =>
     parse(
       ComplexDefaults.new, 
       json, 
@@ -407,7 +407,7 @@ final class ExampleObject {
     required this.myStringDoubleMap,
   });
 
-  factory ExampleObject.fromJson(Map<String, dynamic> json) => 
+  factory ExampleObject.fromJson(dynamic json) => 
     parse(
       ExampleObject.new,
       json,
@@ -437,7 +437,7 @@ final class BaseClass {
     required this.myDouble,
   });
 
-  factory BaseClass.fromJson(Map<String, dynamic> json) => 
+  factory BaseClass.fromJson(dynamic json) => 
     polymorphicParse(
       polymorphicKey,
       json,
@@ -462,7 +462,7 @@ final class SubClassA extends BaseClass {
     required this.myInt,
   }) : super();
 
-  factory SubClassA.fromJson(Map<String, dynamic> json) => 
+  factory SubClassA.fromJson(dynamic json) => 
     parse(
       SubClassA.new,
       json,
@@ -485,7 +485,7 @@ final class SubClassB extends BaseClass {
     required this.myExampleObject,
   }) : super();
 
-  factory SubClassB.fromJson(Map<String, dynamic> json) => 
+  factory SubClassB.fromJson(dynamic json) => 
     parse(
       SubClassB.fromJson,
       json,

@@ -59,7 +59,7 @@ const boolean = _Primitive<bool>();
 /// user defined types.
 sealed class _UserDefined<T> extends JsonProperty<T> {
   /// A constructor that takes a json data and returns a Dart object.
-  Function get function;
+  T Function(dynamic json) get function;
 
   /// Constructs a constant [_UserDefined].
   const _UserDefined() : super();
@@ -69,7 +69,7 @@ sealed class _UserDefined<T> extends JsonProperty<T> {
 
 /// Convenience extension for creating [_UserDefined] properties from
 /// constructors.
-extension UserDefinedTypes<T> on T Function(Map<String, dynamic> json) {
+extension UserDefinedTypes<T> on T Function(dynamic json) {
   /// Wraps a constructor in a [RequiredType]. This is really just a
   /// convenience method for creating a [RequiredType] from a constructor.
   RequiredType<T> get required => RequiredType(this);
@@ -104,7 +104,7 @@ extension UserDefinedTypes<T> on T Function(Map<String, dynamic> json) {
 final class RequiredType<T> extends _UserDefined<T> {
   /// A function that takes a json data and returns a Dart object.
   @override
-  final Function function;
+  final T Function(dynamic json) function;
 
   /// Constructs a constant [RequiredType].
   const RequiredType(this.function) : super();
@@ -116,12 +116,12 @@ final class DefaultType<T> extends _UserDefined<T> {
   final T defaultValue;
 
   /// A function that takes a json data and returns a Dart object.
-  final Function _function;
+  final T Function(dynamic json) _function;
 
   /// Handles the nullability of the input data by using a default
   @override
-  Function get function => (dynamic json) =>
-      json != null ? Function.apply(_function, [json]) : defaultValue;
+  T Function(dynamic json) get function =>
+      (dynamic json) => json != null ? _function(json) : defaultValue;
 
   /// Constructs a constant [DefaultType] with a default value of
   /// [defaultValue].
@@ -131,12 +131,12 @@ final class DefaultType<T> extends _UserDefined<T> {
 /// A user-defined property that is optional in the JSON.
 final class OptionalType<T> extends _UserDefined<T?> {
   /// A function that takes a json data and returns a Dart object.
-  final Function _function;
+  final T Function(dynamic json) _function;
 
   /// Handles the nullability of the input data.
   @override
-  Function get function =>
-      (dynamic json) => json != null ? Function.apply(_function, [json]) : null;
+  T? Function(dynamic json) get function =>
+      (dynamic json) => json != null ? _function(json) : null;
 
   /// Constructs a constant [OptionalType].
   const OptionalType(this._function) : super();
@@ -170,16 +170,35 @@ sealed class _CollectionType<T> extends _UserDefined<T> {
 /// A user-defined property that is a list of user-defined types.
 final class ListType<T> extends _CollectionType<List<T>> {
   /// A function that takes a json data and returns a Dart object.
-  final Function _function;
+  final T Function(dynamic json) _function;
 
   /// Maps the input list to a list of Dart objects.
   @override
   List<T> Function(dynamic json) get function =>
       // ignore: avoid_types_on_closure_parameters
       (final dynamic json) => [
-            for (final element in json as List)
-              Function.apply(_function, [element])
-          ].cast();
+            for (final (index, element) in (json as List).indexed)
+              () {
+                try {
+                  return _function(element);
+                } on InvalidTypeError catch (e) {
+                  throw InvalidTypeError(
+                    actualType: e.actualType,
+                    constructor: e.constructor,
+                    expectedType: e.expectedType,
+                    json: e.json,
+                    propertyName: '[$index].${e.propertyName}',
+                  );
+                } on PropertyMissingError catch (e) {
+                  throw PropertyMissingError(
+                    constructor: e.constructor,
+                    json: e.json,
+                    missingPropertyName: '[$index].${e.missingPropertyName}',
+                    missingPropertyType: e.missingPropertyType,
+                  );
+                }
+              }()
+          ];
 
   /// Constructs a constant [ListType].
   const ListType(this._function) : super();
@@ -188,7 +207,7 @@ final class ListType<T> extends _CollectionType<List<T>> {
 /// A user-defined property that is a map of user-defined types.
 final class MapType<K, T> extends _CollectionType<Map<K, T>> {
   /// A function that takes a json data and returns a Dart object.
-  final Function _function;
+  final T Function(dynamic json) _function;
 
   /// Maps the input map to a map of Dart objects.
   @override
@@ -196,8 +215,27 @@ final class MapType<K, T> extends _CollectionType<Map<K, T>> {
       // ignore: avoid_types_on_closure_parameters
       (final dynamic json) => {
             for (final key in (json as Map<K, dynamic>).keys)
-              key: Function.apply(_function, [json[key]])
-          }.cast();
+              key: () {
+                try {
+                  return _function(json[key]);
+                } on InvalidTypeError catch (e) {
+                  throw InvalidTypeError(
+                    actualType: e.actualType,
+                    constructor: e.constructor,
+                    expectedType: e.expectedType,
+                    json: e.json,
+                    propertyName: '[$key].${e.propertyName}',
+                  );
+                } on PropertyMissingError catch (e) {
+                  throw PropertyMissingError(
+                    constructor: e.constructor,
+                    json: e.json,
+                    missingPropertyName: '[$key].${e.missingPropertyName}',
+                    missingPropertyType: e.missingPropertyType,
+                  );
+                }
+              }()
+          };
 
   /// Constructs a constant [MapType].
   const MapType(this._function) : super();

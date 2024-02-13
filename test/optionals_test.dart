@@ -15,7 +15,7 @@ final class SimpleOptionals extends Equatable {
     this.myBool,
   }) : super();
 
-  factory SimpleOptionals.fromJson(Map<String, dynamic> json) =>
+  factory SimpleOptionals.fromJson(dynamic json) =>
       parse(SimpleOptionals.new, json, {
         'myString': string,
         'myDouble': float.optional,
@@ -36,7 +36,7 @@ final class ComplexOptionals extends Equatable {
     this.optionalBoolList,
   }) : super();
 
-  factory ComplexOptionals.fromJson(Map<String, dynamic> json) =>
+  factory ComplexOptionals.fromJson(dynamic json) =>
       parse(ComplexOptionals.new, json, {
         'optionalObject': SimpleOptionals.fromJson.optional,
         'optionalBoolList': boolean.list.optional

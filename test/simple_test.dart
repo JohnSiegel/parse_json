@@ -15,8 +15,7 @@ final class TestObject extends Equatable {
     required this.myBool,
   }) : super();
 
-  factory TestObject.fromJson(Map<String, dynamic> json) =>
-      parse(TestObject.new, json, {
+  factory TestObject.fromJson(dynamic json) => parse(TestObject.new, json, {
         'myString': string,
         'myDouble': float,
         'myInt': integer,
@@ -44,8 +43,7 @@ final class TestObject2 extends Equatable {
         myBool = notMyBool,
         super();
 
-  factory TestObject2.fromJson(Map<String, dynamic> json) =>
-      parse(TestObject2.new, json, {
+  factory TestObject2.fromJson(dynamic json) => parse(TestObject2.new, json, {
         'notMyString': string,
         'notMyDouble': float,
         'notMyInt': integer,
@@ -65,8 +63,7 @@ final class NestedObject extends Equatable {
     required this.testObject2,
   }) : super();
 
-  factory NestedObject.fromJson(Map<String, dynamic> json) =>
-      parse(NestedObject.new, json, {
+  factory NestedObject.fromJson(dynamic json) => parse(NestedObject.new, json, {
         'testObject': TestObject.fromJson.required,
         'testObject2': TestObject2.fromJson.required,
       });

@@ -14,18 +14,17 @@ base class ExamplePolymorphic extends Equatable {
     required this.myDouble,
   }) : super();
 
-  factory ExamplePolymorphic.fromJson(Map<String, dynamic> json) =>
-      polymorphicParse(
-          polymorphicKey,
-          json,
-          {
-            ExamplePolymorphicA.polymorphicId: ExamplePolymorphicA.fromJson,
-            ExamplePolymorphicB.polymorphicId: ExamplePolymorphicB.fromJson,
-          },
-          baseDefinition: DefinedType(ExamplePolymorphic.new, {
-            'myString': string,
-            'myDouble': float,
-          }));
+  factory ExamplePolymorphic.fromJson(dynamic json) => polymorphicParse(
+      polymorphicKey,
+      json,
+      {
+        ExamplePolymorphicA.polymorphicId: ExamplePolymorphicA.fromJson,
+        ExamplePolymorphicB.polymorphicId: ExamplePolymorphicB.fromJson,
+      },
+      baseDefinition: DefinedType(ExamplePolymorphic.new, {
+        'myString': string,
+        'myDouble': float,
+      }));
 
   @override
   List<Object?> get props => [myString, myDouble];
@@ -44,7 +43,7 @@ final class ExamplePolymorphicA extends ExamplePolymorphic {
     required this.myBool,
   }) : super();
 
-  factory ExamplePolymorphicA.fromJson(Map<String, dynamic> json) =>
+  factory ExamplePolymorphicA.fromJson(dynamic json) =>
       parse(ExamplePolymorphicA.new, json, {
         'myString': string,
         'myDouble': float,
@@ -69,7 +68,7 @@ final class ExamplePolymorphicB extends ExamplePolymorphic {
     required this.doubleList,
   }) : super();
 
-  factory ExamplePolymorphicB.fromJson(Map<String, dynamic> json) =>
+  factory ExamplePolymorphicB.fromJson(dynamic json) =>
       parse(ExamplePolymorphicB.new, json, {
         'myString': string,
         'myDouble': float,

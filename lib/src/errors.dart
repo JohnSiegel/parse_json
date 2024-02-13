@@ -3,10 +3,13 @@ part of '../parse_json.dart';
 /// Indicates that a required property is missing in the JSON object.
 final class PropertyMissingError extends Error {
   /// The error message.
-  final String message;
+  String get message =>
+      'Property missing while parsing $json using $constructor. '
+      'Missing property path: $missingPropertyName. Missing property type: '
+      '$missingPropertyType';
 
   /// The JSON object that is being parsed.
-  final Map<String, dynamic> json;
+  final dynamic json;
 
   /// The constructor that is being used to parse the JSON object.
   final Function constructor;
@@ -19,7 +22,6 @@ final class PropertyMissingError extends Error {
 
   /// Constructs a [PropertyMissingError] to be thrown.
   PropertyMissingError({
-    required this.message,
     required this.json,
     required this.constructor,
     required this.missingPropertyType,
@@ -30,13 +32,15 @@ final class PropertyMissingError extends Error {
 /// Indicates that a property has an invalid type in the JSON object.
 final class InvalidTypeError extends Error {
   /// The error message.
-  final String message;
+  String get message => 'Type mismatch while parsing $json using $constructor. '
+      'Property: $propertyName. Expected type: $expectedType. '
+      'Actual type: $actualType.';
 
   /// The JSON object that is being parsed.
-  final Map<String, dynamic> json;
+  final dynamic json;
 
   /// The constructor that is being used to parse the JSON object.
-  final Function constructor;
+  final Function? constructor;
 
   /// The expected type of the property.
   final Type expectedType;
@@ -49,7 +53,6 @@ final class InvalidTypeError extends Error {
 
   /// Constructs an [InvalidTypeError] to be thrown.
   InvalidTypeError({
-    required this.message,
     required this.json,
     required this.constructor,
     required this.expectedType,
@@ -62,7 +65,8 @@ final class InvalidTypeError extends Error {
 /// not match the provided constructor.
 final class InvalidPropertiesError extends Error {
   /// The error message.
-  final String message;
+  String get message => 'Invalid properties while parsing $constructor. '
+      'Properties: $properties.';
 
   /// The constructor that is being used to parse the JSON object.
   final Function constructor;
@@ -72,7 +76,6 @@ final class InvalidPropertiesError extends Error {
 
   /// Constructs an [InvalidPropertiesError] to be thrown.
   InvalidPropertiesError({
-    required this.message,
     required this.constructor,
     required this.properties,
   }) : super();

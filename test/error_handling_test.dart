@@ -11,8 +11,7 @@ final class TestObject extends Equatable {
     required this.myString,
   }) : super();
 
-  factory TestObject.fromJson(Map<String, dynamic> json) =>
-      parse(TestObject.new, json, {
+  factory TestObject.fromJson(dynamic json) => parse(TestObject.new, json, {
         'myInt': integer,
         'myString': string,
       });
@@ -32,7 +31,7 @@ final class ComplexObject extends Equatable {
     this.optionalTestObject,
   }) : super();
 
-  factory ComplexObject.fromJson(Map<String, dynamic> json) =>
+  factory ComplexObject.fromJson(dynamic json) =>
       parse(ComplexObject.new, json, {
         'testObject': TestObject.fromJson.required,
         'testObjectList': TestObject.fromJson.list,
@@ -99,10 +98,10 @@ void main() {
                 .having(
                   (error) => error.message,
                   'message',
-                  'Property missing in json. Constructor: Closure: ({required '
-                      'int myInt, required String myString}) => TestObject from'
-                      " Function 'TestObject.': static.. Missing property: "
-                      'myString. Missing property type: String',
+                  'Property missing while parsing {myInt: 10} using Closure: '
+                      '({required int myInt, required String myString}) => '
+                      "TestObject from Function 'TestObject.': static.. Missing"
+                      ' property path: myString. Missing property type: String',
                 ),
           ));
 
@@ -137,16 +136,16 @@ void main() {
               .having(
                 (error) => error.message,
                 'message',
-                'Property missing in json. Constructor: Closure: ({required '
-                    'int myInt, required String myString}) => TestObject from'
-                    " Function 'TestObject.': static.. Missing property: "
-                    'myInt. Missing property type: int',
+                'Property missing while parsing {myString: 10} using Closure: '
+                    '({required int myInt, required String myString}) => '
+                    "TestObject from Function 'TestObject.': static.. Missing"
+                    ' property path: myInt. Missing property type: int',
               ),
         ),
       );
 
       expect(
-        () => TestObject.fromJson({}),
+        () => TestObject.fromJson(<String, dynamic>{}),
         throwsA(
           isA<PropertyMissingError>()
               .having(
@@ -172,20 +171,18 @@ void main() {
               .having(
                 (error) => error.message,
                 'message',
-                'Property missing in json. Constructor: Closure: ({required '
+                'Property missing while parsing {} using Closure: ({required '
                     'int myInt, required String myString}) => TestObject from'
-                    " Function 'TestObject.': static.. Missing property: "
+                    " Function 'TestObject.': static.. Missing property path: "
                     'myInt. Missing property type: int',
               ),
         ),
       );
 
-      final objectWithMissingProp = {'myInt': 10};
-
       final complexObjectJson1 = {
         'testObject': {'myInt': 10, 'myString': 'testStr'},
         'testObjectList': [
-          objectWithMissingProp,
+          {'myInt': 10},
           {'myInt': 10, 'myString': 'testStr'}
         ],
       };
@@ -197,17 +194,17 @@ void main() {
               .having(
                 (error) => error.constructor,
                 'constructor',
-                TestObject.new,
+                ComplexObject.new,
               )
               .having(
                 (error) => error.json,
                 'json',
-                objectWithMissingProp,
+                complexObjectJson1,
               )
               .having(
                 (error) => error.missingPropertyName,
                 'missing property name',
-                'myString',
+                'testObjectList.[0].myString',
               )
               .having(
                 (error) => error.missingPropertyType,
@@ -217,10 +214,14 @@ void main() {
               .having(
                 (error) => error.message,
                 'message',
-                'Property missing in json. Constructor: Closure: ({required '
-                    'int myInt, required String myString}) => TestObject from'
-                    " Function 'TestObject.': static.. Missing property: "
-                    'myString. Missing property type: String',
+                'Property missing while parsing {testObject: {myInt: 10, '
+                    'myString: testStr}, testObjectList: [{myInt: 10}, {myInt:'
+                    ' 10, myString: testStr}]} using Closure: ({required'
+                    ' TestObject testObject, required List<TestObject> '
+                    'testObjectList, TestObject? optionalTestObject}) => '
+                    "ComplexObject from Function 'ComplexObject.': static.. "
+                    'Missing property path: testObjectList.[0].myString. '
+                    'Missing property type: String',
               ),
         ),
       );
@@ -256,12 +257,12 @@ void main() {
               .having(
                 (error) => error.message,
                 'message',
-                'Property missing in json. Constructor: Closure: ({required'
-                    ' TestObject testObject, required List<TestObject>'
-                    ' testObjectList, TestObject? optionalTestObject}) =>'
-                    ' ComplexObject from Function \'ComplexObject.\': static.. '
-                    'Missing property: testObjectList. Missing property type: '
-                    'List<TestObject>',
+                'Property missing while parsing {testObject: {myInt: 10, '
+                    'myString: testStr}} using Closure: ({required TestObject '
+                    'testObject, required List<TestObject> testObjectList, '
+                    'TestObject? optionalTestObject}) => ComplexObject from '
+                    "Function 'ComplexObject.': static.. Missing property path:"
+                    ' testObjectList. Missing property type: List<TestObject>',
               ),
         ),
       );
@@ -308,10 +309,11 @@ void main() {
               .having(
                   (error) => error.message,
                   'message',
-                  'Type mismatch in json. Constructor: Closure: ({required int'
-                      ' myInt, required String myString}) => TestObject from'
-                      " Function 'TestObject.': static.. Property: myInt. "
-                      'Expected type: int. Actual type: String.'),
+                  'Type mismatch while parsing {myInt: 10, myString: testStr} '
+                      'using Closure: ({required int myInt, required String '
+                      "myString}) => TestObject from Function 'TestObject.': "
+                      'static.. Property: myInt. Expected type: int. Actual '
+                      'type: String.'),
         ),
       );
 
@@ -352,23 +354,22 @@ void main() {
               .having(
                 (error) => error.message,
                 'message',
-                'Type mismatch in json. Constructor: Closure: ({required int'
-                    ' myInt, required String myString}) => TestObject from'
-                    " Function 'TestObject.': static.. Property: myString. "
-                    'Expected type: String. Actual type: int.',
+                'Type mismatch while parsing {myInt: 10, myString: 10} using '
+                    'Closure: ({required int myInt, required String myString}) '
+                    '=> TestObject from Function \'TestObject.\': static.. '
+                    'Property: myString. Expected type: String. Actual type: '
+                    'int.',
               ),
         ),
       );
 
-      final objectJson3 = {
-        'myString': 'testStr',
-        'myInt': '10',
-      };
-
       final complexObjectJson1 = {
         'testObject': {'myInt': 10, 'myString': 'testStr'},
         'testObjectList': [
-          objectJson3,
+          {
+            'myString': 'testStr',
+            'myInt': '10',
+          },
           {'myInt': '10', 'myString': 'testStr'}
         ],
       };
@@ -380,17 +381,17 @@ void main() {
               .having(
                 (error) => error.constructor,
                 'constructor',
-                TestObject.new,
+                ComplexObject.new,
               )
               .having(
                 (error) => error.json,
                 'json',
-                objectJson3,
+                complexObjectJson1,
               )
               .having(
                 (error) => error.propertyName,
                 'property name',
-                'myInt',
+                'testObjectList.[0].myInt',
               )
               .having(
                 (error) => error.expectedType,
@@ -405,10 +406,15 @@ void main() {
               .having(
                 (error) => error.message,
                 'message',
-                'Type mismatch in json. Constructor: Closure: ({required int'
-                    ' myInt, required String myString}) => TestObject from'
-                    " Function 'TestObject.': static.. Property: myInt. "
-                    'Expected type: int. Actual type: String.',
+                'Type mismatch while parsing {testObject: {myInt: 10, '
+                    'myString: testStr}, testObjectList: [{myString: testStr, '
+                    'myInt: 10}, {myInt: 10, myString: testStr}]} using '
+                    'Closure: ({required TestObject testObject, required '
+                    'List<TestObject> testObjectList, TestObject? '
+                    'optionalTestObject}) => ComplexObject from Function '
+                    "'ComplexObject.': static.. Property: "
+                    'testObjectList.[0].myInt. Expected type: int. Actual '
+                    'type: String.',
               ),
         ),
       );
@@ -453,12 +459,13 @@ void main() {
               .having(
                 (error) => error.message,
                 'message',
-                'Type mismatch in json. Constructor: Closure: ({required '
-                    'TestObject testObject, required List<TestObject> '
-                    'testObjectList, TestObject? optionalTestObject}) => '
-                    'ComplexObject from Function \'ComplexObject.\': static.. '
-                    'Property: testObject. Expected type: TestObject. Actual '
-                    'type: int.',
+                'Type mismatch while parsing {testObject: 10, testObjectList: '
+                    '[{myInt: 10, myString: testStr}, {myInt: 10, myString: '
+                    'testStr}]} using Closure: ({required TestObject testObject'
+                    ', required List<TestObject> testObjectList, TestObject? '
+                    'optionalTestObject}) => ComplexObject from Function '
+                    "'ComplexObject.': static.. Property: testObject. Expected"
+                    ' type: TestObject. Actual type: int.',
               ),
         ),
       );
@@ -489,18 +496,11 @@ void main() {
             .having(
               (error) => error.message,
               'message',
-              'Invalid properties used for constructor. Trying to call '
-                  'constructor Closure: ({required int myInt, required String '
-                  "myString}) => InvalidClass from Function 'InvalidClass.': "
-                  "static. with properties {notMyInt: Instance of '_Primitive<i"
-                  "nt>', notMyString: Instance of '_Primitive<String>'}. Error:"
-                  ' NoSuchMethodError: Closure call with mismatched arguments: '
-                  "function 'InvalidClass.InvalidClass'\nReceiver: Closure: ({"
-                  'required int myInt, required String myString}) => '
-                  "InvalidClass from Function 'InvalidClass.': static.\nTried "
-                  'calling: InvalidClass.InvalidClass(notMyInt: 10, notMyString'
-                  ': "testStr")\nFound: InvalidClass.InvalidClass({required int'
-                  ' myInt, required String myString}) => InvalidClass',
+              'Invalid properties while parsing Closure: ({required int myInt,'
+                  ' required String myString}) => InvalidClass from Function '
+                  "'InvalidClass.': static.. Properties: {notMyInt: Instance of"
+                  " '_Primitive<int>', notMyString: Instance of "
+                  "'_Primitive<String>'}.",
             )),
       );
     },

@@ -15,8 +15,7 @@ final class SimpleLists extends Equatable {
     this.myOptionalDoubleList,
   }) : super();
 
-  factory SimpleLists.fromJson(Map<String, dynamic> json) =>
-      parse(SimpleLists.new, json, {
+  factory SimpleLists.fromJson(dynamic json) => parse(SimpleLists.new, json, {
         'myStringList': string.list,
         'myOptionalDoubleList': float.list.optional,
         'myIntList': integer.list,
@@ -37,8 +36,7 @@ final class ComplexLists extends Equatable {
     this.optionalListofSimpleLists,
   }) : super();
 
-  factory ComplexLists.fromJson(Map<String, dynamic> json) =>
-      parse(ComplexLists.new, json, {
+  factory ComplexLists.fromJson(dynamic json) => parse(ComplexLists.new, json, {
         'listOfMapsOfLists': SimpleLists.fromJson.stringMap.list,
         'optionalListofSimpleLists': SimpleLists.fromJson.list.optional,
       });
@@ -60,8 +58,7 @@ final class SimpleMaps extends Equatable {
     this.myOptionalDoubleMap,
   }) : super();
 
-  factory SimpleMaps.fromJson(Map<String, dynamic> json) =>
-      parse(SimpleMaps.new, json, {
+  factory SimpleMaps.fromJson(dynamic json) => parse(SimpleMaps.new, json, {
         'myStringMap': string.stringMap,
         'myOptionalDoubleMap': float.stringMap.optional,
         'myIntMap': integer.stringMap,
@@ -82,8 +79,7 @@ final class ComplexMaps extends Equatable {
     this.optionalMapOfSimpleMaps,
   }) : super();
 
-  factory ComplexMaps.fromJson(Map<String, dynamic> json) =>
-      parse(ComplexMaps.new, json, {
+  factory ComplexMaps.fromJson(dynamic json) => parse(ComplexMaps.new, json, {
         'mapOfListsOfMaps': SimpleMaps.fromJson.list.stringMap,
         'optionalMapOfSimpleMaps': SimpleMaps.fromJson.stringMap.optional,
       });
