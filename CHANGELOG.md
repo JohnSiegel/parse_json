@@ -1,5 +1,9 @@
 # Changelog
 
+# 2.2.3
+
+Added toString overrides to all errors to make them easier to debug.
+
 # 2.2.2
 
 Improved error handling, documentation, and made the parser use `dynamic` instead of `Map<String, dynamic>` for the JSON object.

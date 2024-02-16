@@ -27,6 +27,9 @@ final class PropertyMissingError extends Error {
     required this.missingPropertyType,
     required this.missingPropertyName,
   }) : super();
+
+  @override
+  String toString() => message;
 }
 
 /// Indicates that a property has an invalid type in the JSON object.
@@ -59,6 +62,9 @@ final class InvalidTypeError extends Error {
     required this.actualType,
     required this.propertyName,
   }) : super();
+
+  @override
+  String toString() => message;
 }
 
 /// Thrown when calling `parse`. Indicates that the provided properties map does
@@ -79,4 +85,7 @@ final class InvalidPropertiesError extends Error {
     required this.constructor,
     required this.properties,
   }) : super();
+
+  @override
+  String toString() => message;
 }
