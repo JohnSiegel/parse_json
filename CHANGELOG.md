@@ -1,5 +1,9 @@
 # Changelog
 
+# 2.2.4
+
+Removed equatable dependency.
+
 # 2.2.3
 
 Added toString overrides to all errors to make them easier to debug.
