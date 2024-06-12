@@ -11,8 +11,18 @@ final class _Decoded extends _Decoding {
   const _Decoded(this.node, this.value);
 }
 
-final class _DecodingError extends _Decoding {
-  const _DecodingError();
+final class _DecoderNotFound extends _Decoding {
+  const _DecoderNotFound();
+}
+
+_Decoding _dynamicDecode(dynamic json, List<_NodeMap> nodeMaps) {
+  for (final nodeMap in nodeMaps) {
+    final result = nodeMap.dynamicDecode(json);
+    if (result is _Decoded) {
+      return result;
+    }
+  }
+  return const _DecoderNotFound();
 }
 
 _Decoding _dynamicDecodeProperty(dynamic json) => switch (json) {
@@ -20,74 +30,24 @@ _Decoding _dynamicDecodeProperty(dynamic json) => switch (json) {
       num() || bool() || String() => switch (_enumNodes.dynamicDecode(json)) {
           _Decoded(node: final node, value: final value) =>
             _Decoded(node, value),
-          _DecodingError() => _Decoded(null, json),
+          _DecoderNotFound() => _Decoded(null, json),
         },
-      List<dynamic>() => switch (_listEnumNodes.dynamicDecode(json)) {
-          _Decoded(node: final node, value: final value) =>
-            _Decoded(node, value),
-          _DecodingError() => switch (_listNodes.dynamicDecode(json)) {
-              _Decoded(node: final node, value: final value) =>
-                _Decoded(node, value),
-              _DecodingError() => switch (
-                    _nestedEnumListNodesDepthOne.dynamicDecode(json)) {
-                  _Decoded(node: final node, value: final value) =>
-                    _Decoded(node, value),
-                  _DecodingError() => switch (
-                        _nestedListNodesDepthOne.dynamicDecode(json)) {
-                      _Decoded(node: final node, value: final value) =>
-                        _Decoded(node, value),
-                      _DecodingError() => switch (
-                            _nestedEnumListNodesDepthTwo.dynamicDecode(json)) {
-                          _Decoded(node: final node, value: final value) =>
-                            _Decoded(node, value),
-                          _DecodingError() => switch (
-                                _nestedListNodesDepthTwo.dynamicDecode(json)) {
-                              _Decoded(node: final node, value: final value) =>
-                                _Decoded(node, value),
-                              _DecodingError() => const _DecodingError(),
-                            },
-                        },
-                    },
-                },
-            },
-        },
-      Map<String, dynamic>() => switch (_objectNodes.dynamicDecode(json)) {
-          _Decoded(node: final node, value: final value) =>
-            _Decoded(node, value),
-          _DecodingError() => switch (_mapEnumNodes.dynamicDecode(json)) {
-              _Decoded(node: final node, value: final value) =>
-                _Decoded(node, value),
-              _DecodingError() => switch (_mapNodes.dynamicDecode(json)) {
-                  _Decoded(node: final node, value: final value) =>
-                    _Decoded(node, value),
-                  _DecodingError() => switch (
-                        _nestedEnumMapNodesDepthOne.dynamicDecode(json)) {
-                      _Decoded(node: final node, value: final value) =>
-                        _Decoded(node, value),
-                      _DecodingError() => switch (
-                            _nestedMapNodesDepthOne.dynamicDecode(json)) {
-                          _Decoded(node: final node, value: final value) =>
-                            _Decoded(node, value),
-                          _DecodingError() => switch (
-                                _nestedEnumMapNodesDepthTwo
-                                    .dynamicDecode(json)) {
-                              _Decoded(node: final node, value: final value) =>
-                                _Decoded(node, value),
-                              _DecodingError() => switch (
-                                    _nestedMapNodesDepthTwo
-                                        .dynamicDecode(json)) {
-                                  _Decoded(
-                                    node: final node,
-                                    value: final value
-                                  ) =>
-                                    _Decoded(node, value),
-                                  _DecodingError() => const _DecodingError(),
-                                },
-                            },
-                        },
-                    },
-                },
-            },
-        },
-      _ => const _DecodingError(),
+      List<dynamic>() => _dynamicDecode(json, [
+          _listEnumNodes,
+          _primitiveListNodes,
+          _nestedEnumListNodesDepthOne,
+          _nestedListNodesDepthOne,
+          _nestedEnumListNodesDepthTwo,
+          _nestedListNodesDepthTwo
+        ]),
+      Map<String, dynamic>() => _dynamicDecode(json, [
+          _objectNodes,
+          _mapEnumNodes,
+          _primitiveMapNodes,
+          _nestedEnumMapNodesDepthOne,
+          _nestedMapNodesDepthOne,
+          _nestedEnumMapNodesDepthTwo,
+          _nestedMapNodesDepthTwo,
+        ]),
+      _ => const _DecoderNotFound(),
     };

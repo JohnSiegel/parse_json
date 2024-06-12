@@ -52,7 +52,7 @@ final class _ObjectNode extends _JsonNode {
                     return children[key]!.decoder(json[key]);
                   }
                   switch (_dynamicDecodeProperty(json[key])) {
-                    case _DecodingError():
+                    case _DecoderNotFound():
                       throw Exception();
                     case _Decoded(node: final node, value: final value):
                       if (node != null) {
