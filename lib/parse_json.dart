@@ -1,4 +1,3 @@
-part 'src/errors.dart';
-part 'src/parse_data.dart';
-part 'src/parse.dart';
-part 'src/property.dart';
+part 'src/node_maps.dart';
+part 'src/node.dart';
+part 'src/dynamic_decode.dart';

@@ -7,7 +7,7 @@ parse_json
 
 ### *NO CODE GENERATION OR REFLECTION*
 
-parse_json uses named parameters from your constructor to match JSON keys. It supports many features such as optionals, nested types, polymorphism/inheritance, enums, and collections. It is also type-safe, meaning that if you try to deserialize a JSON object into a type that doesn't match, it will throw an error.
+parse_json uses named parameters from your constructor to match JSON keys. It supports many features such as optionals, nested types, enums, and collections. It is also type-safe, meaning that if you try to deserialize a JSON object into a type that doesn't match, it will throw an error.
 
 ## Getting Started
 
@@ -193,7 +193,6 @@ final class ComplexExampleObject {
 * [Enums](#enums)
 * [Default/Fallback values](#defaultfallback-values)
 * [Collections](#collections)
-* [Inheritance/Polymorphic types](#inheritancepolymorphic-types)
 * [Full example](example/lib/main.dart)
 
 ## Primitive types:
@@ -415,85 +414,6 @@ final class ExampleObject {
         'myStringList': string.list,
         'myStringDoubleMap': float.stringMap,
       }
-    );
-}
-```
-
-## Inheritance/Polymorphic types:
-
-With polymorphic base types, you need to use `polymorphicParse`. You will need to provide a `polymorphicKey` for the base class and a unique id for each subclass. The `polymorphicKey` is the key in the JSON that will be used to determine the type of the object. The unique ids are the values of `polymorphicKey` that will be used to determine the type of an object polymorphically at runtime. You must provide the `fromJson` factory functions to the `derivedTypes` parameter of `polymorphicParse`, and use a unique id for each subclass as the key in the map. You can also provide a `baseDefinition` to the `polymorphicParse` function that will be used to parse the base class if it is not abstract and `polymorphicKey` is missing from the JSON.
-
-```dart
-import 'package:parse_json/parse_json.dart';
-
-final class BaseClass {
-  static const polymorphicKey = 'type';
-  
-  final String myString;
-  final double myDouble;
-
-  const BaseClass({
-    required this.myString,
-    required this.myDouble,
-  });
-
-  factory BaseClass.fromJson(dynamic json) => 
-    polymorphicParse(
-      polymorphicKey,
-      json,
-      {
-        SubClassA.polymorphicId: SubClassA.fromJson,
-        SubClassB.polymorphicId: SubClassB.fromJson,
-      },
-      baseDefinition: DefinedType(BaseClass.new, {
-        'myString': string,
-        'myDouble': float,
-    }));
-}
-
-final class SubClassA extends BaseClass {
-  static const polymorphicId = 'A';
-
-  final int myInt;
-
-  const SubClassA({
-    required super.myString,
-    required super.myDouble,
-    required this.myInt,
-  }) : super();
-
-  factory SubClassA.fromJson(dynamic json) => 
-    parse(
-      SubClassA.new,
-      json,
-      {
-        'myString': string,
-        'myDouble': float,
-        'myInt': integer,
-      },
-    );
-}
-
-final class SubClassB extends BaseClass {
-  static const polymorphicId = 'B';
-
-  final ExampleObject myExampleObject;
-
-  const SubClassB({
-    required super.myString,
-    required super.myDouble,
-    required this.myExampleObject,
-  }) : super();
-
-  factory SubClassB.fromJson(dynamic json) => 
-    parse(
-      SubClassB.fromJson,
-      json,
-      {
-        'myString': string,
-        'myDouble': float,
-        'myExampleObject': ExampleObject.fromJson.required,
-      },
     );
 }
 ```

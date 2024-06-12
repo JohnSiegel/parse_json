@@ -1,7 +1,6 @@
 import 'defaults.dart';
 import 'enums.dart';
 import 'nested_objects.dart';
-import 'polymorphism.dart';
 import 'simple_objects.dart';
 
 void check(bool test) {
@@ -13,7 +12,6 @@ void check(bool test) {
 void main() {
   simpleObjects();
   nestedObjects();
-  polymorphism();
   enums();
   defaults();
 }

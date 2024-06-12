@@ -15,12 +15,12 @@ final class SimpleLists extends Equatable {
     this.myOptionalDoubleList,
   }) : super();
 
-  factory SimpleLists.fromJson(dynamic json) => parse(SimpleLists.new, json, {
-        'myStringList': string.list,
-        'myOptionalDoubleList': float.list.optional,
-        'myIntList': integer.list,
-        'myBoolList': boolean.list,
-      });
+  static const List<String> keys = [
+    'myStringList',
+    'myOptionalDoubleList',
+    'myIntList',
+    'myBoolList'
+  ];
 
   @override
   List<Object?> get props =>
@@ -36,10 +36,10 @@ final class ComplexLists extends Equatable {
     this.optionalListofSimpleLists,
   }) : super();
 
-  factory ComplexLists.fromJson(dynamic json) => parse(ComplexLists.new, json, {
-        'listOfMapsOfLists': SimpleLists.fromJson.stringMap.list,
-        'optionalListofSimpleLists': SimpleLists.fromJson.list.optional,
-      });
+  static const List<String> keys = [
+    'listOfMapsOfLists',
+    'optionalListofSimpleLists'
+  ];
 
   @override
   List<Object?> get props => [listOfMapsOfLists, optionalListofSimpleLists];
@@ -58,12 +58,12 @@ final class SimpleMaps extends Equatable {
     this.myOptionalDoubleMap,
   }) : super();
 
-  factory SimpleMaps.fromJson(dynamic json) => parse(SimpleMaps.new, json, {
-        'myStringMap': string.stringMap,
-        'myOptionalDoubleMap': float.stringMap.optional,
-        'myIntMap': integer.stringMap,
-        'myBoolMap': boolean.stringMap,
-      });
+  static const List<String> keys = [
+    'myStringMap',
+    'myOptionalDoubleMap',
+    'myIntMap',
+    'myBoolMap'
+  ];
 
   @override
   List<Object?> get props =>
@@ -79,51 +79,21 @@ final class ComplexMaps extends Equatable {
     this.optionalMapOfSimpleMaps,
   }) : super();
 
-  factory ComplexMaps.fromJson(dynamic json) => parse(ComplexMaps.new, json, {
-        'mapOfListsOfMaps': SimpleMaps.fromJson.list.stringMap,
-        'optionalMapOfSimpleMaps': SimpleMaps.fromJson.stringMap.optional,
-      });
+  static const List<String> keys = [
+    'mapOfListsOfMaps',
+    'optionalMapOfSimpleMaps'
+  ];
 
   @override
   List<Object?> get props => [mapOfListsOfMaps, optionalMapOfSimpleMaps];
 }
 
-final class DeeplyNestedPrimitiveCollection extends Equatable {
-  final List<List<List<List<List<List<List<List<List<List<int>>>>>>>>>>
-      deepList;
-
-  const DeeplyNestedPrimitiveCollection({
-    required this.deepList,
-  }) : super();
-
-  factory DeeplyNestedPrimitiveCollection.fromJson(Map<String, dynamic> json) =>
-      parse(DeeplyNestedPrimitiveCollection.new, json, {
-        'deepList': integer.list.list.list.list.list.list.list.list.list.list,
-      });
-
-  @override
-  List<Object?> get props => [deepList];
-}
-
-final class DeeplyNestedCollection extends Equatable {
-  final List<List<List<List<List<List<List<List<List<List<SimpleLists>>>>>>>>>>
-      deepList;
-
-  const DeeplyNestedCollection({
-    required this.deepList,
-  }) : super();
-
-  factory DeeplyNestedCollection.fromJson(Map<String, dynamic> json) =>
-      parse(DeeplyNestedCollection.new, json, {
-        'deepList': SimpleLists
-            .fromJson.list.list.list.list.list.list.list.list.list.list
-      });
-
-  @override
-  List<Object?> get props => [deepList];
-}
-
 void main() {
+  registerJson<SimpleLists>(SimpleLists.new, SimpleLists.keys);
+  registerJson<SimpleMaps>(SimpleMaps.new, SimpleMaps.keys);
+  registerJson<ComplexLists>(ComplexLists.new, ComplexLists.keys);
+  registerJson<ComplexMaps>(ComplexMaps.new, ComplexMaps.keys);
+
   test('Deserializing lists', () {
     final testLists1 = SimpleLists(
       myStringList: ['testStr', 'testStr2'],
@@ -171,9 +141,9 @@ void main() {
       'optionalListofSimpleLists': [testListsJson1, testListsJson2],
     };
 
-    expect(SimpleLists.fromJson(testListsJson1), testLists1);
-    expect(SimpleLists.fromJson(testListsJson2), testLists2);
-    expect(ComplexLists.fromJson(testComplexListsJson), testComplexLists);
+    expect(fromJson<SimpleLists>(testListsJson1), testLists1);
+    expect(fromJson<SimpleLists>(testListsJson2), testLists2);
+    expect(fromJson<ComplexLists>(testComplexListsJson), testComplexLists);
   });
 
   test('Deserializing maps', () {
@@ -222,123 +192,8 @@ void main() {
       },
     };
 
-    expect(SimpleMaps.fromJson(testMapsJson1), testMaps1);
-    expect(SimpleMaps.fromJson(testMapsJson2), testMaps2);
-    expect(ComplexMaps.fromJson(testComplexMapsJson), testComplexMaps);
-  });
-
-  test('Deserializing deeply nested collections', () {
-    final testDeeplyNested = DeeplyNestedPrimitiveCollection(
-      deepList: [
-        [
-          [
-            [
-              [
-                [
-                  [
-                    [
-                      [
-                        [1, 2]
-                      ]
-                    ]
-                  ]
-                ]
-              ]
-            ]
-          ]
-        ]
-      ],
-    );
-
-    final testDeeplyNestedJson = {
-      'deepList': [
-        [
-          [
-            [
-              [
-                [
-                  [
-                    [
-                      [
-                        [1, 2]
-                      ]
-                    ]
-                  ]
-                ]
-              ]
-            ]
-          ]
-        ]
-      ]
-    };
-    expect(DeeplyNestedPrimitiveCollection.fromJson(testDeeplyNestedJson),
-        testDeeplyNested);
-
-    final testDeeplyNestedComplex = DeeplyNestedCollection(
-      deepList: [
-        [
-          [
-            [
-              [
-                [
-                  [
-                    [
-                      [
-                        [
-                          SimpleLists(
-                              myStringList: ['testStr'],
-                              myIntList: [1],
-                              myBoolList: [true]),
-                          SimpleLists(
-                              myStringList: ['testStr2'],
-                              myIntList: [2],
-                              myBoolList: [false])
-                        ]
-                      ]
-                    ]
-                  ]
-                ]
-              ]
-            ]
-          ]
-        ]
-      ],
-    );
-
-    final testDeeplyNestedComplexJson = {
-      'deepList': [
-        [
-          [
-            [
-              [
-                [
-                  [
-                    [
-                      [
-                        [
-                          {
-                            'myStringList': ['testStr'],
-                            'myIntList': [1],
-                            'myBoolList': [true]
-                          },
-                          {
-                            'myStringList': ['testStr2'],
-                            'myIntList': [2],
-                            'myBoolList': [false]
-                          }
-                        ]
-                      ]
-                    ]
-                  ]
-                ]
-              ]
-            ]
-          ]
-        ]
-      ]
-    };
-
-    expect(DeeplyNestedCollection.fromJson(testDeeplyNestedComplexJson),
-        testDeeplyNestedComplex);
+    expect(fromJson<SimpleMaps>(testMapsJson1), testMaps1);
+    expect(fromJson<SimpleMaps>(testMapsJson2), testMaps2);
+    expect(fromJson<ComplexMaps>(testComplexMapsJson), testComplexMaps);
   });
 }

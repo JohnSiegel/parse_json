@@ -15,13 +15,7 @@ final class SimpleOptionals extends Equatable {
     this.myBool,
   }) : super();
 
-  factory SimpleOptionals.fromJson(dynamic json) =>
-      parse(SimpleOptionals.new, json, {
-        'myString': string,
-        'myDouble': float.optional,
-        'myInt': integer,
-        'myBool': boolean.optional,
-      });
+  static const List<String> keys = ['myString', 'myDouble', 'myInt', 'myBool'];
 
   @override
   List<Object?> get props => [myString, myDouble, myInt, myBool];
@@ -36,17 +30,16 @@ final class ComplexOptionals extends Equatable {
     this.optionalBoolList,
   }) : super();
 
-  factory ComplexOptionals.fromJson(dynamic json) =>
-      parse(ComplexOptionals.new, json, {
-        'optionalObject': SimpleOptionals.fromJson.optional,
-        'optionalBoolList': boolean.list.optional
-      });
+  static const List<String> keys = ['optionalObject', 'optionalBoolList'];
 
   @override
   List<Object?> get props => [optionalObject, optionalBoolList];
 }
 
 void main() {
+  registerJson<SimpleOptionals>(SimpleOptionals.new, SimpleOptionals.keys);
+  registerJson<ComplexOptionals>(ComplexOptionals.new, ComplexOptionals.keys);
+
   test('Deserializing primitive optionals', () {
     final testOptional1 = SimpleOptionals(
         myString: 'testStr', myDouble: 12.5, myInt: 10, myBool: false);
@@ -62,8 +55,8 @@ void main() {
 
     final testOptionalJson2 = {'myString': 'testStr2', 'myInt': 5};
 
-    expect(SimpleOptionals.fromJson(testOptionalJson1), testOptional1);
-    expect(SimpleOptionals.fromJson(testOptionalJson2), testOptional2);
+    expect(fromJson<SimpleOptionals>(testOptionalJson1), testOptional1);
+    expect(fromJson<SimpleOptionals>(testOptionalJson2), testOptional2);
   });
 
   test('Deserializing more complex optionals', () {
@@ -81,9 +74,9 @@ void main() {
     final completelyEmptyOptional = ComplexOptionals();
     final completelyEmptyJson = <String, dynamic>{};
 
-    expect(ComplexOptionals.fromJson(testOptionalJson1), testOptional1);
-    expect(ComplexOptionals.fromJson(testOptionalJson2), testOptional2);
-    expect(ComplexOptionals.fromJson(completelyEmptyJson),
+    expect(fromJson<ComplexOptionals>(testOptionalJson1), testOptional1);
+    expect(fromJson<ComplexOptionals>(testOptionalJson2), testOptional2);
+    expect(fromJson<ComplexOptionals>(completelyEmptyJson),
         completelyEmptyOptional);
   });
 }

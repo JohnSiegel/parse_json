@@ -15,12 +15,7 @@ final class TestObject extends Equatable {
     required this.myBool,
   }) : super();
 
-  factory TestObject.fromJson(dynamic json) => parse(TestObject.new, json, {
-        'myString': string,
-        'myDouble': float,
-        'myInt': integer,
-        'myBool': boolean,
-      });
+  static const List<String> keys = ['myString', 'myDouble', 'myInt', 'myBool'];
 
   @override
   List<Object?> get props => [myString, myDouble, myInt, myBool];
@@ -43,12 +38,12 @@ final class TestObject2 extends Equatable {
         myBool = notMyBool,
         super();
 
-  factory TestObject2.fromJson(dynamic json) => parse(TestObject2.new, json, {
-        'notMyString': string,
-        'notMyDouble': float,
-        'notMyInt': integer,
-        'notMyBool': boolean,
-      });
+  static const List<String> keys = [
+    'notMyString',
+    'notMyDouble',
+    'notMyInt',
+    'notMyBool'
+  ];
 
   @override
   List<Object?> get props => [myString, myDouble, myInt, myBool];
@@ -63,16 +58,17 @@ final class NestedObject extends Equatable {
     required this.testObject2,
   }) : super();
 
-  factory NestedObject.fromJson(dynamic json) => parse(NestedObject.new, json, {
-        'testObject': TestObject.fromJson.required,
-        'testObject2': TestObject2.fromJson.required,
-      });
+  static const List<String> keys = ['testObject', 'testObject2'];
 
   @override
   List<Object?> get props => [testObject, testObject2];
 }
 
 void main() {
+  registerJson<TestObject>(TestObject.new, TestObject.keys);
+  registerJson<TestObject2>(TestObject2.new, TestObject2.keys);
+  registerJson<NestedObject>(NestedObject.new, NestedObject.keys);
+
   test(
     'Simple deserialization',
     () {
@@ -96,8 +92,8 @@ void main() {
         'myBool': true,
       };
 
-      expect(TestObject.fromJson(objectJson1), object1);
-      expect(TestObject.fromJson(objectJson2), object2);
+      expect(fromJson<TestObject>(objectJson1), object1);
+      expect(fromJson<TestObject>(objectJson2), object2);
     },
   );
 
@@ -132,8 +128,8 @@ void main() {
         'notMyBool': true,
       };
 
-      expect(TestObject2.fromJson(objectJson1), object1);
-      expect(TestObject2.fromJson(objectJson2), object2);
+      expect(fromJson<TestObject2>(objectJson1), object1);
+      expect(fromJson<TestObject2>(objectJson2), object2);
     },
   );
 
@@ -164,7 +160,7 @@ void main() {
         },
       };
 
-      expect(NestedObject.fromJson(nestedObjectJson), nestedObject);
+      expect(fromJson<NestedObject>(nestedObjectJson), nestedObject);
     },
   );
 }

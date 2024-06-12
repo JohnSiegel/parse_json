@@ -12,10 +12,7 @@ final class SimpleObject extends Equatable {
     required this.myDouble,
   });
 
-  factory SimpleObject.fromJson(dynamic json) => parse(SimpleObject.new, json, {
-        'myString': string,
-        'myDouble': float,
-      });
+  static const List<String> keys = ['myString', 'myDouble'];
 
   @override
   List<Object?> get props => [myString, myDouble];
@@ -32,27 +29,29 @@ final class ComplexObject extends Equatable {
     required this.exampleObject,
   });
 
-  factory ComplexObject.fromJson(Map<String, dynamic> json) =>
-      parse(ComplexObject.new, json, {
-        'exampleList': SimpleObject.fromJson.list,
-        'exampleMap': SimpleObject.fromJson.stringMap,
-        'exampleObject': SimpleObject.fromJson.optional,
-      });
+  static const List<String> keys = [
+    'exampleList',
+    'exampleMap',
+    'exampleObject'
+  ];
 
   @override
   List<Object?> get props => [exampleList, exampleMap, exampleObject];
 }
 
 void nestedObjects() {
+  registerJson<SimpleObject>(SimpleObject.new, SimpleObject.keys);
+  registerJson<ComplexObject>(ComplexObject.new, ComplexObject.keys);
+
   final object1 = SimpleObject(myString: 'exampleStr', myDouble: 12.5);
   final objectJson1 = {'myString': 'exampleStr', 'myDouble': 12.5};
 
-  check(SimpleObject.fromJson(objectJson1) == object1);
+  check(fromJson<SimpleObject>(objectJson1) == object1);
 
   final object2 = SimpleObject(myString: 'exampleStr2', myDouble: 102.5);
   final objectJson2 = {'myString': 'exampleStr2', 'myDouble': 102.5};
 
-  check(SimpleObject.fromJson(objectJson2) == object2);
+  check(fromJson<SimpleObject>(objectJson2) == object2);
 
   final complexObject = ComplexObject(
     exampleList: [object1, object2],
@@ -66,5 +65,5 @@ void nestedObjects() {
     'exampleObject': objectJson1,
   };
 
-  check(ComplexObject.fromJson(complexObjectJson) == complexObject);
+  check(fromJson<ComplexObject>(complexObjectJson) == complexObject);
 }

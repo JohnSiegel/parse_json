@@ -11,17 +11,11 @@ final class SimpleDefaults extends Equatable {
   const SimpleDefaults({
     required this.myString,
     required this.myInt,
-    required this.myDouble,
-    required this.myBool,
+    this.myDouble = 12.5,
+    this.myBool = true,
   }) : super();
 
-  factory SimpleDefaults.fromJson(dynamic json) =>
-      parse(SimpleDefaults.new, json, {
-        'myString': string,
-        'myDouble': float.withDefault(12.5),
-        'myInt': integer,
-        'myBool': boolean.withDefault(true),
-      });
+  static const List<String> keys = ['myString', 'myDouble', 'myInt', 'myBool'];
 
   @override
   List<Object?> get props => [myString, myDouble, myInt, myBool];
@@ -32,28 +26,25 @@ final class ComplexDefaults extends Equatable {
   final List<bool> boolList;
 
   const ComplexDefaults({
-    required this.object,
-    required this.boolList,
+    this.object = const SimpleDefaults(
+      myInt: -1,
+      myDouble: -100.5,
+      myBool: false,
+      myString: 'defaultStr',
+    ),
+    this.boolList = const [false, true, false],
   }) : super();
 
-  factory ComplexDefaults.fromJson(dynamic json) =>
-      parse(ComplexDefaults.new, json, {
-        'object': SimpleDefaults.fromJson.withDefault(
-          SimpleDefaults(
-            myString: 'defaultStr',
-            myInt: -1,
-            myDouble: -100.5,
-            myBool: false,
-          ),
-        ),
-        'boolList': boolean.list.withDefault([false, true, false])
-      });
+  static const List<String> keys = ['object', 'boolList'];
 
   @override
   List<Object?> get props => [object, boolList];
 }
 
 void main() {
+  registerJson<SimpleDefaults>(SimpleDefaults.new, SimpleDefaults.keys);
+  registerJson<ComplexDefaults>(ComplexDefaults.new, ComplexDefaults.keys);
+
   test('Deserializing primitive defaults', () {
     final testDefault1 = SimpleDefaults(
       myString: 'testStr',
@@ -78,8 +69,8 @@ void main() {
 
     final testDefaultJson2 = {'myString': 'testStr2', 'myInt': 5};
 
-    expect(SimpleDefaults.fromJson(testDefaultJson1), testDefault1);
-    expect(SimpleDefaults.fromJson(testDefaultJson2), testDefault2);
+    expect(fromJson<SimpleDefaults>(testDefaultJson1), testDefault1);
+    expect(fromJson<SimpleDefaults>(testDefaultJson2), testDefault2);
   });
 
   test('Deserializing more complex defaults', () {
@@ -120,9 +111,9 @@ void main() {
     );
     final completelyEmptyJson = <String, dynamic>{};
 
-    expect(ComplexDefaults.fromJson(testDefaultJson1), testDefault1);
-    expect(ComplexDefaults.fromJson(testDefaultJson2), testDefault2);
+    expect(fromJson<ComplexDefaults>(testDefaultJson1), testDefault1);
+    expect(fromJson<ComplexDefaults>(testDefaultJson2), testDefault2);
     expect(
-        ComplexDefaults.fromJson(completelyEmptyJson), completelyEmptyDefault);
+        fromJson<ComplexDefaults>(completelyEmptyJson), completelyEmptyDefault);
   });
 }

@@ -20,15 +20,14 @@ final class ExampleObject extends Equatable {
     this.myOptionalInt,
   });
 
-  factory ExampleObject.fromJson(Map<String, dynamic> json) =>
-      parse(ExampleObject.new, json, {
-        'myString': string,
-        'myDouble': float,
-        'myInt': integer,
-        'myBool': boolean,
-        'myOptionalString': string.optional,
-        'myOptionalInt': integer.optional,
-      });
+  static const List<String> keys = [
+    'myString',
+    'myDouble',
+    'myInt',
+    'myBool',
+    'myOptionalString',
+    'myOptionalInt'
+  ];
 
   @override
   List<Object?> get props =>
@@ -36,6 +35,8 @@ final class ExampleObject extends Equatable {
 }
 
 void simpleObjects() {
+  registerJson<ExampleObject>(ExampleObject.new, ExampleObject.keys);
+
   final object1 = ExampleObject(
     myString: 'exampleStr',
     myDouble: 12.5,
@@ -50,7 +51,7 @@ void simpleObjects() {
     'myBool': false,
   };
 
-  check(ExampleObject.fromJson(objectJson1) == object1);
+  check(fromJson<ExampleObject>(objectJson1) == object1);
 
   final object2 = ExampleObject(
     myString: 'exampleStr2',
@@ -70,5 +71,5 @@ void simpleObjects() {
     'myOptionalInt': 42,
   };
 
-  check(ExampleObject.fromJson(objectJson2) == object2);
+  check(fromJson<ExampleObject>(objectJson2) == object2);
 }

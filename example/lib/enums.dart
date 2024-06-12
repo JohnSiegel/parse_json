@@ -8,12 +8,10 @@ enum TestEnum {
   b,
   c;
 
-  factory TestEnum.fromJson(dynamic json) => switch (json) {
-        'abbracaddabra' => TestEnum.a,
-        'bye-bye' => TestEnum.b,
-        'ciao' => TestEnum.c,
-        _ => throw Exception('Unknown enum value')
-      };
+  factory TestEnum.fromJson(dynamic json) => TestEnum.values.firstWhere(
+        (e) => e.name == json,
+        orElse: () => throw Exception('Unknown enum value'),
+      );
 }
 
 final class TestObject extends Equatable {
@@ -27,12 +25,7 @@ final class TestObject extends Equatable {
     this.c,
   }) : super();
 
-  factory TestObject.fromJson(Map<String, dynamic> json) =>
-      parse(TestObject.new, json, {
-        'a': TestEnum.fromJson.required,
-        'b': TestEnum.fromJson.optional,
-        'c': TestEnum.fromJson.list.stringMap.optional,
-      });
+  static const List<String> keys = ['a', 'b', 'c'];
 
   @override
   List<Object?> get props => [a, b, c];
@@ -43,12 +36,7 @@ enum TestEnum2 {
   b,
   c;
 
-  factory TestEnum2.fromJson(dynamic json) => switch (json) {
-        0 => TestEnum2.a,
-        1 => TestEnum2.b,
-        2 => TestEnum2.c,
-        _ => throw Exception('Unknown enum value'),
-      };
+  factory TestEnum2.fromJson(dynamic json) => TestEnum2.values[json as int];
 }
 
 final class TestObject2 extends Equatable {
@@ -62,18 +50,18 @@ final class TestObject2 extends Equatable {
     required this.c,
   }) : super();
 
-  factory TestObject2.fromJson(Map<String, dynamic> json) =>
-      parse(TestObject2.new, json, {
-        'a': TestEnum2.fromJson.required,
-        'b': TestEnum2.fromJson.optional,
-        'c': TestEnum2.fromJson.list,
-      });
+  static const List<String> keys = ['a', 'b', 'c'];
 
   @override
   List<Object?> get props => [a, b, c];
 }
 
 void enums() {
+  registerEnum<TestEnum>(TestEnum.fromJson);
+  registerJson<TestObject>(TestObject.new, TestObject.keys);
+  registerEnum<TestEnum2>(TestEnum2.fromJson);
+  registerJson<TestObject2>(TestObject2.new, TestObject2.keys);
+
   final object1 = TestObject(
     a: TestEnum.a,
     c: {
@@ -82,13 +70,13 @@ void enums() {
     },
   );
   final objectJson1 = {
-    'a': 'abbracaddabra',
+    'a': 'a',
     'c': {
-      'first': ['abbracaddabra', 'bye-bye', 'ciao'],
-      'second': ['bye-bye', 'ciao']
+      'first': ['a', 'b', 'c'],
+      'second': ['b', 'c']
     },
   };
-  check(TestObject.fromJson(objectJson1) == object1);
+  check(fromJson<TestObject>(objectJson1) == object1);
 
   final object2 = TestObject2(
     a: TestEnum2.a,
@@ -100,5 +88,5 @@ void enums() {
     'b': 1,
     'c': [2, 0, 1],
   };
-  check(TestObject2.fromJson(objectJson2) == object2);
+  check(fromJson<TestObject2>(objectJson2) == object2);
 }

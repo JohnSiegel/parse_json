@@ -12,17 +12,11 @@ final class SimpleDefaults extends Equatable {
   const SimpleDefaults({
     required this.myString,
     required this.myInt,
-    required this.myDouble,
-    required this.myBool,
+    this.myDouble = 12.5,
+    this.myBool = true,
   }) : super();
 
-  factory SimpleDefaults.fromJson(dynamic json) =>
-      parse(SimpleDefaults.new, json, {
-        'myString': string,
-        'myDouble': float.withDefault(12.5),
-        'myInt': integer,
-        'myBool': boolean.withDefault(true),
-      });
+  static const List<String> keys = ['myString', 'myDouble', 'myInt', 'myBool'];
 
   @override
   List<Object?> get props => [myString, myDouble, myInt, myBool];
@@ -33,28 +27,25 @@ final class ComplexDefaults extends Equatable {
   final List<bool> boolList;
 
   const ComplexDefaults({
-    required this.object,
+    this.object = const SimpleDefaults(
+      myString: 'defaultStr',
+      myInt: -1,
+      myDouble: -100.5,
+      myBool: false,
+    ),
     required this.boolList,
   }) : super();
 
-  factory ComplexDefaults.fromJson(dynamic json) =>
-      parse(ComplexDefaults.new, json, {
-        'object': SimpleDefaults.fromJson.withDefault(
-          SimpleDefaults(
-            myString: 'defaultStr',
-            myInt: -1,
-            myDouble: -100.5,
-            myBool: false,
-          ),
-        ),
-        'boolList': boolean.list.withDefault([false, true, false])
-      });
+  static const List<String> keys = ['object', 'boolList'];
 
   @override
   List<Object?> get props => [object, boolList];
 }
 
 void defaults() {
+  registerJson<SimpleDefaults>(SimpleDefaults.new, SimpleDefaults.keys);
+  registerJson<ComplexDefaults>(ComplexDefaults.new, ComplexDefaults.keys);
+
   final testDefault = SimpleDefaults(
     myString: 'testStr2',
     myInt: 5,
@@ -64,7 +55,7 @@ void defaults() {
 
   final testDefaultJson = {'myString': 'testStr2', 'myInt': 5};
 
-  check(SimpleDefaults.fromJson(testDefaultJson) == testDefault);
+  check(fromJson<SimpleDefaults>(testDefaultJson) == testDefault);
 
   final testComplexDefault = ComplexDefaults(
       boolList: [true, false],
@@ -78,5 +69,6 @@ void defaults() {
     'boolList': [true, false]
   };
 
-  check(ComplexDefaults.fromJson(testComplexDefaultJson) == testComplexDefault);
+  check(
+      fromJson<ComplexDefaults>(testComplexDefaultJson) == testComplexDefault);
 }
